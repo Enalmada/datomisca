@@ -1,25 +1,9 @@
-/*
- * Copyright 2012 Pellucid and Zenexity
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
 package datomisca
 
+import scala.util.Properties
 
 class TxReport(rawReport: java.util.Map[_, _]) {
-  import datomic.Connection.{DB_BEFORE, DB_AFTER, TX_DATA, TEMPIDS}
+  import datomic.Connection.{DB_AFTER, DB_BEFORE, TEMPIDS, TX_DATA}
   import datomic.db.Db
 
   def dbBefore: Database =
@@ -40,7 +24,7 @@ class TxReport(rawReport: java.util.Map[_, _]) {
   private val tempids = rawReport.get(TEMPIDS).asInstanceOf[AnyRef]
 
   def resolve(id: DId): Long =
-    resolveOpt(id) getOrElse { throw new TempidNotResolved(id) }
+    resolveOpt(id).getOrElse { throw new TempidNotResolved(id) }
 
   def resolve(identified: TempIdentified): Long =
     resolve(identified.id)
@@ -51,8 +35,8 @@ class TxReport(rawReport: java.util.Map[_, _]) {
   def resolveOpt(id: DId): Option[Long] =
     Option {
       datomic.Peer.resolveTempid(dbAfter.underlying, tempids, id.toDatomicId)
-    } map { id =>
-      id.asInstanceOf[Long]
+    } map {
+      id => id.asInstanceOf[Long]
     }
 
   def resolveOpt(ids: DId*): Seq[Option[Long]] =
@@ -61,18 +45,44 @@ class TxReport(rawReport: java.util.Map[_, _]) {
   def resolveEntity(id: DId): Entity =
     dbAfter.entity(resolve(id))
 
-  lazy val tempidMap = new Map[DId, Long] {
-    override def get(tempId: DId) = resolveOpt(tempId)
-    override def iterator = throw new UnsupportedOperationException
-    override def +[T >: Long](kv: (DId, T)) = throw new UnsupportedOperationException
-    override def -(k: DId) = throw new UnsupportedOperationException
+  // Abstract Map implementation
+  abstract class BaseTempidMap extends collection.Map[DId, Long] {
+    override def get(tempId: DId): Option[Long] = resolveOpt(tempId)
+
+    override def iterator: Iterator[(DId, Long)] =
+      throw new UnsupportedOperationException("Iterator is not supported for tempidMap.")
+
+    override def +[V1 >: Long](kv: (DId, V1)): collection.Map[DId, V1] =
+      throw new UnsupportedOperationException("Addition is not supported for tempidMap.")
+
+    override def -(key: DId): collection.Map[DId, Long] =
+      throw new UnsupportedOperationException("Removal is not supported for tempidMap.")
+
+    // Core Scala 2.13 methods
+    override def -(key1: DId, key2: DId, keys: DId*): collection.Map[DId, Long] =
+      throw new UnsupportedOperationException("Multi-key removal is not supported for tempidMap.")
   }
 
-  override def toString =
+  lazy val tempidMap: collection.Map[DId, Long] = {
+    class Scala213TempidMap extends BaseTempidMap {
+      def removed(key: DId): collection.Map[DId, Long] =
+        throw new UnsupportedOperationException("Removal is not supported for tempidMap.")
+
+      def updated[V1 >: Long](key: DId, value: V1): collection.Map[DId, V1] =
+        throw new UnsupportedOperationException("Update is not supported for tempidMap.")
+    }
+
+    if (Properties.versionNumberString.startsWith("2.13"))
+      new Scala213TempidMap
+    else
+      new BaseTempidMap {}
+  }
+
+  override def toString: String =
     s"""TxReport {
-       |  dbBefore: ${dbBefore},
+       |  dbBefore: $dbBefore,
        |  dbBefore.basisT: ${dbBefore.basisT}
-       |  dbAfter: ${dbAfter},
+       |  dbAfter: $dbAfter,
        |  dbAfter.basisT: ${dbAfter.basisT},
        |  txData: $txData,
        |  tempids: $tempids
