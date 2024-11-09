@@ -1,13 +1,11 @@
 
 organization in ThisBuild := "com.github.enalmada"
 
-licenses in ThisBuild += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
-
-version in ThisBuild := "0.8.3"
+version in ThisBuild := "0.7.3"
 
 scalaVersion in ThisBuild := "2.12.18"
 
-crossScalaVersions in ThisBuild := Seq("2.12.18", "2.13.11")
+// crossScalaVersions in ThisBuild := Seq("2.12.18", "2.13.11")
 
 scalacOptions in ThisBuild ++= Seq(
     "-deprecation",
