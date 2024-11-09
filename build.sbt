@@ -3,7 +3,7 @@ organization in ThisBuild := "com.github.enalmada"
 
 licenses in ThisBuild += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 
-version in ThisBuild := "0.8.2"
+version in ThisBuild := "0.8.3"
 
 scalaVersion in ThisBuild := "2.12.18"
 
@@ -112,3 +112,52 @@ credentials += Credentials(Path.userHome / ".sbt" / "sonatype.credentials")
 releaseCrossBuild:= true
 publishConfiguration := publishConfiguration.value.withOverwrite(true)
 publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
+
+
+
+//*******************************
+// Maven settings
+//*******************************
+
+publishMavenStyle := true
+
+organization := "com.github.enalmada"
+
+description := "Datomisca"
+
+startYear := Some(2016)
+
+publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+
+publishArtifact in Test := false
+
+pomIncludeRepository := { _ => false }
+
+pomExtra in Global := {
+    <url>https://github.com/Enalmada/datomisca</url>
+      <licenses>
+          <license>
+              <name>Apache 2</name>
+              <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          </license>
+      </licenses>
+      <scm>
+          <connection>scm:git:git@github.com:enalmada/datomisca.git</connection>
+          <developerConnection>scm:git:git@github.com:enalmada/datomisca.git</developerConnection>
+          <url>https://github.com/enalmada</url>
+      </scm>
+      <developers>
+          <developer>
+              <id>enalmada</id>
+              <name>Adam Lane</name>
+              <url>https://github.com/enalmada</url>
+          </developer>
+      </developers>
+}
+

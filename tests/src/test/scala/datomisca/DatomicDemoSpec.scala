@@ -22,6 +22,7 @@ import org.specs2.mutable._
 
 import scala.concurrent._
 import scala.concurrent.duration.Duration
+import ExecutionContext.Implicits.global
 
 
 class DatomicDemoSpec extends Specification {
