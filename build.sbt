@@ -23,7 +23,7 @@ scalacOptions in ThisBuild ++= Seq(
 
 
 scalacOptions in ThisBuild ++= (
-  if (scalaVersion.value.startsWith("2.13")) List("-Ymacro-annotations")
+  if (scalaVersion.value.startsWith("2.13")) List("-Ymacro-annotations", "-DSCALA213")
   else List("-Xfuture", "-Yno-adapted-args")
   )
 
