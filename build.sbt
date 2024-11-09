@@ -3,11 +3,11 @@ organization in ThisBuild := "com.github.enalmada"
 
 licenses in ThisBuild += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 
-version in ThisBuild := "0.7.2"
+version in ThisBuild := "0.8.2"
 
 scalaVersion in ThisBuild := "2.12.18"
 
-//crossScalaVersions in ThisBuild := Seq("2.12.18")
+crossScalaVersions in ThisBuild := Seq("2.12.18", "2.13.11")
 
 scalacOptions in ThisBuild ++= Seq(
     "-deprecation",
@@ -23,12 +23,11 @@ scalacOptions in ThisBuild ++= Seq(
     "-Ywarn-value-discard"
   )
 
-/*
+
 scalacOptions in ThisBuild ++= (
-  if (scalaVersion.value.startsWith("2.12")) Nil
-  else List("-Ymacro-annotations")
+  if (scalaVersion.value.startsWith("2.13")) List("-Ymacro-annotations")
+  else List("-Xfuture", "-Yno-adapted-args")
   )
-*/
 
 scalacOptions in ThisBuild ++= (
     if (scalaVersion.value.startsWith("2.10") || scalaVersion.value.startsWith("2.12") || scalaVersion.value.startsWith("2.13")) Nil
