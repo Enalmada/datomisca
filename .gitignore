@@ -23,3 +23,6 @@ target/
 Gemfile
 Gemfile.lock
 
+.bsp
+.codebuddy/
+sbt/

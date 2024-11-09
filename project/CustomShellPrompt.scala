@@ -6,7 +6,7 @@ object CustomShellPrompt {
   val Branch = """refs/heads/(.*)\s""".r
 
   def gitBranchOrSha =
-    (Process("git symbolic-ref HEAD") #|| Process("git rev-parse --short HEAD")).!! match {
+    (scala.sys.process.Process("git symbolic-ref HEAD") #|| scala.sys.process.Process("git rev-parse --short HEAD")).!! match {
       case Branch(name) => name
       case sha          => sha.stripLineEnd
     }
