@@ -23,8 +23,8 @@ import scala.language.reflectiveCalls
 import org.specs2.mutable._
 
 import scala.concurrent._
-import ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import ExecutionContext.Implicits.global
 
 
 class DatomicMapping2Spec extends Specification {
@@ -32,24 +32,24 @@ class DatomicMapping2Spec extends Specification {
 
   val uri = "datomic:mem://DatomicMapping2Spec"
 
-  
+
 
   case class Person(id: Long, name: String, age: Long, birth: java.util.Date, characters: Set[Keyword], specialChar: Keyword, dog: Option[Dog] = None, doggies: Set[Dog])
   case class Dog(id: Option[Long], name: String, age: Long)
 
   case class Person2(
-    id: Long, name: String, age: Long, birth: java.util.Date, 
+    id: Long, name: String, age: Long, birth: java.util.Date,
     characters: Set[Keyword], specialChar: Keyword,
     dog: Option[Long] = None, doggies: Set[Long])
 
   case class Person3(
-    id: Long, name: String, age: Long, birth: java.util.Date, 
+    id: Long, name: String, age: Long, birth: java.util.Date,
     characters: Set[Keyword], specialChar: Keyword,
     dog: Option[Long] = None, doggies: Option[Set[Long]] = None)
 
   val person = new Namespace("person") {
     val character = Namespace("person.character")
-  }      
+  }
 
   val dog = Namespace("dog")
 
@@ -92,7 +92,7 @@ class DatomicMapping2Spec extends Specification {
 
   implicit val personReader = (
     DatomicMapping.readId and
-    PersonSchema.name       .read[String]         and 
+    PersonSchema.name       .read[String]         and
     PersonSchema.age        .read[Long]           and
     PersonSchema.birth      .read[java.util.Date] and
     PersonSchema.characters .read[Set[Keyword]]   and
@@ -103,7 +103,7 @@ class DatomicMapping2Spec extends Specification {
 
   implicit val person2Reader = (
     DatomicMapping.readId and
-    PersonSchema.name       .read[String]         and 
+    PersonSchema.name       .read[String]         and
     PersonSchema.age        .read[Long]           and
     PersonSchema.birth      .read[java.util.Date] and
     PersonSchema.characters .read[Set[Keyword]]   and
@@ -114,7 +114,7 @@ class DatomicMapping2Spec extends Specification {
 
   implicit val person3Reader = (
     DatomicMapping.readId and
-    PersonSchema.name       .read[String]         and 
+    PersonSchema.name       .read[String]         and
     PersonSchema.age        .read[Long]           and
     PersonSchema.birth      .read[java.util.Date] and
     PersonSchema.characters .read[Set[Keyword]]   and
@@ -125,7 +125,7 @@ class DatomicMapping2Spec extends Specification {
 
 /*implicit val personWriter = (
     DatomicMapping.writeId and
-    PersonSchema.name       .write[String]         and 
+    PersonSchema.name       .write[String]         and
     PersonSchema.age        .write[Long]           and
     PersonSchema.birth      .write[java.util.Date] and
     PersonSchema.characters .write[Set[DRef]]      and
@@ -135,7 +135,7 @@ class DatomicMapping2Spec extends Specification {
   )(unlif(Person.unapply))*/
 
 
-  val birthDate = new java.util.Date() 
+  val birthDate = new java.util.Date()
   val medor = Dog(None, "medor", 5L)
   val medorId = DId(Partition.USER)
   var realMedorId: Long = _
@@ -153,18 +153,18 @@ class DatomicMapping2Spec extends Specification {
   var realDoggy3Id: Long = _
 
   val toto = Person(
-    0L, "toto", 30L, birthDate, 
+    0L, "toto", 30L, birthDate,
     Set(violent.ident, weak.ident), clever.ident, Some(medor), Set(doggy1, doggy2, doggy3)
   )
   val totobis = Person2(
-    0L, "toto", 30L, birthDate, 
+    0L, "toto", 30L, birthDate,
     Set(violent.ident, weak.ident), clever.ident, None, Set()
   )
   val totoId = DId(Partition.USER)
   var realTotoId: Long = _
 
   val toto2 = Person3(
-    0L, "toto2", 30L, birthDate, 
+    0L, "toto2", 30L, birthDate,
     Set(violent.ident, weak.ident), clever.ident, None, None
   )
   val toto2Id = DId(Partition.USER)
@@ -172,7 +172,7 @@ class DatomicMapping2Spec extends Specification {
 
   "Datomic" should {
     "create entity" in {
-      
+
       //DatomicBootstrap(uri)
       println(s"created DB with uri $uri: ${Datomic.createDatabase(uri)}")
       implicit val conn = Datomic.connect(uri)
@@ -221,7 +221,7 @@ class DatomicMapping2Spec extends Specification {
               person / "name" -> "tata",
               person / "age"  -> 23L
             )
-          ) map { tx => 
+          ) map { tx =>
             println(s"Provisioned data... TX: $tx")
             realTotoId   = tx.resolve(totoId)
             realToto2Id  = tx.resolve(toto2Id)
@@ -231,14 +231,14 @@ class DatomicMapping2Spec extends Specification {
             realDoggy3Id = tx.resolve(doggy3Id)
 
             Datomic.q(Query("""
-              [ :find ?e 
+              [ :find ?e
                 :where [?e :person/name "toto"]
               ]
             """), Datomic.database).head match {
               case e: Long =>
                 val entity = Datomic.database.entity(e)
                 println(
-                  "dentity age:" + entity.getAs[Long](person / "age") + 
+                  "dentity age:" + entity.getAs[Long](person / "age") +
                   " name:" + entity(person / "name") +
                   " map:" + entity.toMap
                 )
@@ -260,7 +260,7 @@ class DatomicMapping2Spec extends Specification {
       implicit val conn = Datomic.connect(uri)
 
       Datomic.q(Query("""
-        [ :find ?e 
+        [ :find ?e
           :where [?e :dog/name "medor"]
         ]
       """), Datomic.database).head match {
@@ -270,7 +270,7 @@ class DatomicMapping2Spec extends Specification {
       }
 
       Datomic.q(Query("""
-        [ :find ?e 
+        [ :find ?e
           :where [?e :person/name "toto"]
         ]
       """), Datomic.database).head match {
@@ -280,7 +280,7 @@ class DatomicMapping2Spec extends Specification {
           val realDoggy1 = doggy1.copy(id=Some(realDoggy1Id))
           val realDoggy2 = doggy2.copy(id=Some(realDoggy2Id))
           val realDoggy3 = doggy3.copy(id=Some(realDoggy3Id))
-          
+
           DatomicMapping.fromEntity[Person](entity) must beEqualTo(
             toto.copy(
               id      = realTotoId,
@@ -297,7 +297,7 @@ class DatomicMapping2Spec extends Specification {
       }
 
       Datomic.q(Query("""
-        [ :find ?e 
+        [ :find ?e
           :where [?e :person/name "toto2"]
         ]
       """), Datomic.database).head match {
@@ -318,7 +318,7 @@ class DatomicMapping2Spec extends Specification {
       implicit val conn = Datomic.connect(uri)
 
       Datomic.q(Query("""
-        [ :find ?e 
+        [ :find ?e
           :where [?e :person/name "toto"]
         ]
       """), Datomic.database).head match {
@@ -363,5 +363,5 @@ class DatomicMapping2Spec extends Specification {
     }
 
   }
-  
+
 }

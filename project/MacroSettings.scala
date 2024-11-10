@@ -4,13 +4,19 @@ import Keys._
 object MacroSettings {
 
   val settings = Seq(
-    addCompilerPlugin("org.scalamacros" % "paradise" % Dependencies.V.macroParadise cross CrossVersion.full),
 
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
-
-    libraryDependencies ++= (
-        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % Dependencies.V.macroParadise)
-        else Nil
-      )
+    libraryDependencies ++= {
+      val scalaVer = scalaVersion.value
+      val scalaReflect = "org.scala-lang" % "scala-reflect" % scalaVer
+      val additionalPlugins = CrossVersion.partialVersion(scalaVer) match {
+        case Some((2, 12)) =>
+          Seq(
+            compilerPlugin("org.scalamacros" % "paradise" % Dependencies.V.macroParadise cross CrossVersion.full)
+          )
+        case _ => Seq.empty
+      }
+      Seq(scalaReflect) ++ additionalPlugins
+    }
   )
 }
+

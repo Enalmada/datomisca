@@ -1,32 +1,15 @@
-/*
- * Copyright 2012 Pellucid and Zenexity
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package datomisca
 
 import org.specs2.mutable._
-
-import org.specs2.specification.{Step, Fragments}
-
+import org.specs2.specification.BeforeAfterAll
 import scala.concurrent._
-import ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import ExecutionContext.Implicits.global
 
+class DatomicQuery2Spec extends Specification with BeforeAfterAll {
 
-class DatomicQuery2Spec extends Specification {
   sequential
+
   val uri = "datomic:mem://datomicquery2spec"
   val person = Namespace("person")
 
@@ -47,7 +30,9 @@ class DatomicQuery2Spec extends Specification {
     println("Deleted DB")
   }
 
-  override def map(fs: => Fragments) = Step(startDB) ^ fs ^ Step(stopDB)
+  override def beforeAll(): Unit = startDB()
+
+  override def afterAll(): Unit = stopDB()
 
   "Datomic" should {
     "1 - pure query" in {
@@ -74,7 +59,6 @@ class DatomicQuery2Spec extends Specification {
     }
 
     "2 - typed query with rule with 2 params only" in {
-
       implicit val conn = Datomic.connect(uri)
 
       val q = Query("""
@@ -91,7 +75,6 @@ class DatomicQuery2Spec extends Specification {
     }
 
     "3 - typed query with rule with params variable length" in {
-
       implicit val conn = Datomic.connect(uri)
 
       Datomic.q(Query("""
@@ -110,8 +93,8 @@ class DatomicQuery2Spec extends Specification {
     }
 
     "4 - typed query with rule with list of tuple inputs" in {
-
       implicit val conn = Datomic.connect(uri)
+
       val q = Query("""
         [
          :find ?e ?name ?age
@@ -136,7 +119,6 @@ class DatomicQuery2Spec extends Specification {
     }
 
     "5 - typed query with fulltext query" in {
-
       implicit val conn = Datomic.connect(uri)
       val q = Query("""
         [
@@ -200,35 +182,31 @@ class DatomicQuery2Spec extends Specification {
 
       success
     }
-    
-     "10 - pure query attribute" in {
+
+    "10 - pure query attribute" in {
       implicit val conn = Datomic.connect(uri)
       val query1 = Query("""
-        [ :find ?e 
+        [ :find ?e
           :in $ ?char
           :where  [ ?e :person/name ?n ]
                   [ ?e :person/character ?char ]
         ]
       """)
-      
-       val query2 = Query("""
-        [:find ?a ?v :in $ ?e  :where [ ?e ?a ?v _]] 
+
+      val query2 = Query("""
+        [:find ?a ?v :in $ ?e :where [ ?e ?a ?v _]]
       """)
-      
 
       Datomic.q(
         query1,
         Datomic.database,
         Datomic.KW(":person.character/violent")
       ) map {
-        case (e: Long) => {
-           val result = Datomic.q(query2, Datomic.database,e) 
-           result must not be empty
-           println(result)
-        
-        }
-      } should  not (throwA[UnsupportedDatomicTypeException])
-     
+        case (e: Long) =>
+          val result = Datomic.q(query2, Datomic.database, e)
+          result must not be empty
+          println(result)
+      } should not(throwA[UnsupportedDatomicTypeException])
     }
   }
 }

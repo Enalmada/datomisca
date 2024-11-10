@@ -19,8 +19,8 @@ package datomisca
 import org.specs2.mutable._
 
 import scala.concurrent._
-import ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import ExecutionContext.Implicits.global
 
 
 class DatomicDatabaseSpec extends Specification {
@@ -30,7 +30,7 @@ class DatomicDatabaseSpec extends Specification {
 
   "Datomic Database" should {
     "filter" in {
-      
+
       println(s"created DB with uri $uri: ${Datomic.createDatabase(uri)}")
       implicit val conn = Datomic.connect(uri)
 
@@ -97,7 +97,7 @@ class DatomicDatabaseSpec extends Specification {
           :db/ident :user/passwordHash
           :db/valueType :db.type/string
           :db/cardinality :db.cardinality/one
-          :db.install/_attribute :db.part/db} 
+          :db.install/_attribute :db.part/db}
          {:db/id #db/id[:db.part/db]
           :db/ident :user/upVotes
           :db/valueType :db.type/ref

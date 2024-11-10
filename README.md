@@ -20,3 +20,19 @@ Datomisca uses Scala concepts to enhance the Datomic experience for Scala develo
 - Advanced functional programming
 - Compile-time enhancement with Scala 2.10 macros
 
+## Versions
+* **TRUNK** [not released in the repository, yet]
+    * Fancy contributing something? :-)
+* **0.7.3** [release on 2024-11-09]
+  * Playframework 2.8.0, scala 2.13.11
+* **0.7.2** [release on 2023-09-13]
+  * Playframework 2.8.0, scala 2.13.11   
+* **0.7.1** [release on 2019-12-24]
+    * Playframework 2.8.0, scala 2.12/2.13  
+* **0.7.0** [release on 2019-12-8]
+    * scala 2.12
+
+
+## Release
+sbt +publishSigned
+sbt sonatypeRelease
