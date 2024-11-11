@@ -4,7 +4,6 @@ import org.specs2.mutable._
 import org.specs2.specification.BeforeAfterAll
 import scala.concurrent._
 import scala.concurrent.duration.Duration
-import ExecutionContext.Implicits.global
 
 class DatomicQuery2Spec extends Specification with BeforeAfterAll {
 

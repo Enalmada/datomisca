@@ -1,12 +1,12 @@
 /*
  * Copyright 2012 Pellucid and Zenexity
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,8 +48,8 @@ object FromDatomic extends FromDatomicImplicits {
   }
 }
 
-/** Generic DatomicData to Scala type 
-  * Multi-valued "function" (not real function actually) 
+/** Generic DatomicData to Scala type
+  * Multi-valued "function" (not real function actually)
   * which inverse is surjective ToDatomic or ToDatomicCast
   * 1 DatomicData -> n Scala type
   */
@@ -114,9 +114,6 @@ import java.{util => ju}
 import java.util.{Date, UUID}
 import java.net.URI
 
-import clojure.{lang => clj}
-
-
 /**
   * Think of FromDatomicInj[DD, T] as a type-level function: DD => T
   * The implicits here construct a multi-parameter type class,
@@ -154,7 +151,7 @@ private[datomisca] trait FromDatomicInjImplicits {
 trait FromDatomicImplicits {
 
   implicit def FromDatomicInj2FromDatomic[DD <: AnyRef, T]
-      (implicit fd: FromDatomicInj[DD, T]): FromDatomic[DD, T] = 
+      (implicit fd: FromDatomicInj[DD, T]): FromDatomic[DD, T] =
       FromDatomic[DD, T](fd.from(_))
 
   implicit val DLong2Int:               FromDatomic[jl.Long,     Int]         = FromDatomic(_.toInt)
@@ -235,7 +232,7 @@ trait ToDatomicInjImplicits {
   */
 trait ToDatomicImplicits {
   implicit def ToDatomicInj2ToDatomic[DD <: AnyRef, T]
-      (implicit tdat: ToDatomicInj[DD, T]): ToDatomic[DD, T] = 
+      (implicit tdat: ToDatomicInj[DD, T]): ToDatomic[DD, T] =
       ToDatomic[DD, T](tdat.to(_))
 
   implicit val Int2DLong        = ToDatomic[jl.Long, Int](_.toLong)
@@ -265,7 +262,7 @@ trait ToDatomicImplicits {
   * ToDatomicCast fixes the return type of ToDatomic as DatomicData
   */
 trait ToDatomicCastImplicits {
-  implicit def DDWriter2ToDatomicCast[DD <: AnyRef, A](implicit tdat: ToDatomic[DD, A]) = 
+  implicit def DDWriter2ToDatomicCast[DD <: AnyRef, A](implicit tdat: ToDatomic[DD, A]) =
     ToDatomicCast[A] { (a: A) => tdat.to(a): AnyRef }
 
   implicit def DIdCast[I <: DId] = ToDatomicCast[I] { (i: I) => i.toDatomicId }

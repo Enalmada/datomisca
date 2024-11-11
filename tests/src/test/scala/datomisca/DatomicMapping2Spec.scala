@@ -255,7 +255,6 @@ class DatomicMapping2Spec extends Specification {
     }
 
     "read case class with ID" in {
-      import scala.util.{Try, Success, Failure}
 
       implicit val conn = Datomic.connect(uri)
 
@@ -313,7 +312,6 @@ class DatomicMapping2Spec extends Specification {
     }
 
     "get entity fields from attributes" in {
-      import scala.util.{Try, Success, Failure}
 
       implicit val conn = Datomic.connect(uri)
 
@@ -333,14 +331,14 @@ class DatomicMapping2Spec extends Specification {
 
           entity.as[Long](person / "age") must beEqualTo(30)
 
-          val characters  = entity(PersonSchema.characters)
-          val characters2 = entity.getAs[Set[Keyword]](person / "characters")
+          // val characters  = entity(PersonSchema.characters)
+          // val characters2 = entity.getAs[Set[Keyword]](person / "characters")
 
           entity.as[java.util.Date](person / "birth") must beEqualTo(birthDate)
 
           entity.get(PersonSchema.birth) must beEqualTo(Some(birthDate))
 
-          val dogValue0 = entity.getAs[Entity](person / "dog")
+          // val dogValue0 = entity.getAs[Entity](person / "dog")
 
           entity.getIdView[Dog](PersonSchema.dog) must beEqualTo(Some(IdView(realMedorId)(medor.copy(id=Some(realMedorId)))))
 

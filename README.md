@@ -23,8 +23,10 @@ Datomisca uses Scala concepts to enhance the Datomic experience for Scala develo
 ## Versions
 * **TRUNK** [not released in the repository, yet]
     * Fancy contributing something? :-)
+* **0.8.3** [release on 2024-11-10]
+  * scala 2.13.11
 * **0.7.3** [release on 2024-11-09]
-  * Playframework 2.8.0, scala 2.13.11
+  * Playframework 2.8.0
 * **0.7.2** [release on 2023-09-13]
   * Playframework 2.8.0, scala 2.13.11   
 * **0.7.1** [release on 2019-12-24]
