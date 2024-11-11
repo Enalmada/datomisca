@@ -1,6 +1,6 @@
 package datomisca
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.duration._
 
 import java.{util => ju}

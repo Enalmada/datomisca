@@ -195,9 +195,9 @@ class DatomicMappingSpec extends Specification {
               [ :find ?e
                 :where [?e :person/name "toto"]
               ]
-            """), Datomic.database).head match {
+            """), Datomic.database()).head match {
               case e: Long =>
-                val entity = Datomic.database.entity(e)
+                val entity = Datomic.database().entity(e)
                 println(
                   "dentity age:" + entity.getAs[Long](person / "age") +
                   " name:" + entity(person / "name") +
@@ -229,9 +229,9 @@ class DatomicMappingSpec extends Specification {
         [ :find ?e
           :where [?e :person/name "toto"]
         ]
-      """), Datomic.database).head match {
+      """), Datomic.database()).head match {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
 
           entity(PersonSchema.name) must beEqualTo("toto")
 
@@ -318,9 +318,9 @@ class DatomicMappingSpec extends Specification {
               [ :find ?e
                 :where [?e :person/name "toto"]
               ]
-            """), Datomic.database).head match {
+            """), Datomic.database()).head match {
               case e: Long =>
-                val entity = Datomic.database.entity(e)
+                val entity = Datomic.database().entity(e)
                 println(
                   "dentity age:" + entity.getAs[Long](person / "age") +
                   " name:" + entity(person / "name") +
@@ -380,10 +380,10 @@ class DatomicMappingSpec extends Specification {
             realMedorId  = tx.resolve(medorId)
             realDoggy1Id = tx.resolve(doggy1Id)
 
-            DatomicMapping.fromEntity[Dog](Datomic.database.entity(realMedorId))(wrongDogReader) must throwA[datomisca.EntityKeyNotFoundException]
-            DatomicMapping.fromEntity[Dog](Datomic.database.entity(realMedorId))(wrongDogReader orElse dogReader) should beEqualTo(Dog("medor", 5L))
-            DatomicMapping.fromEntity[Dog](Datomic.database.entity(realMedorId))(dogReader.filter(dog => dog.name == "medor")) should beEqualTo(Dog("medor", 5L))
-            DatomicMapping.fromEntity[Dog](Datomic.database.entity(realMedorId))(dogReader.filter(dog => dog.name == "brutus")) should throwA[datomisca.EntityMappingException]
+            DatomicMapping.fromEntity[Dog](Datomic.database().entity(realMedorId))(wrongDogReader) must throwA[datomisca.EntityKeyNotFoundException]
+            DatomicMapping.fromEntity[Dog](Datomic.database().entity(realMedorId))(wrongDogReader orElse dogReader) should beEqualTo(Dog("medor", 5L))
+            DatomicMapping.fromEntity[Dog](Datomic.database().entity(realMedorId))(dogReader.filter(dog => dog.name == "medor")) should beEqualTo(Dog("medor", 5L))
+            DatomicMapping.fromEntity[Dog](Datomic.database().entity(realMedorId))(dogReader.filter(dog => dog.name == "brutus")) should throwA[datomisca.EntityMappingException]
           }
         },
         Duration("2 seconds")

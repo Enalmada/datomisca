@@ -142,9 +142,9 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
               :where [ ?e :person/friend ?f ]
                      [ ?f :person/name "toto" ]
             ]
-          """), Datomic.database) map {
+          """), Datomic.database()) map {
             case e: Long =>
-              val entity = Datomic.database.entity(e)
+              val entity = Datomic.database().entity(e)
               val p @ Person(name, age) = DatomicMapping.fromEntity[Person](entity)
               println(s"Found person with name $name and age $age")
               p
@@ -203,9 +203,9 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
               :where [ ?e :person/friend ?f ]
                      [ ?f :person/name "toto" ]
             ]
-          """), Datomic.database) map {
+          """), Datomic.database()) map {
             case e: Long =>
-              val entity = Datomic.database.entity(e)
+              val entity = Datomic.database().entity(e)
               val Person(name, age) = DatomicMapping.fromEntity[Person](entity)
               println(s"2 Found person with name $name and age $age")
           }
@@ -289,7 +289,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
         println(s"2 Provisioned more data... TX: $tx")
         val txIds = tx.tempidMap
         println(s"4 totoId:${txIds(totoId)} medorId:${txIds(medorId)}")
-        val entity = Datomic.database.entity(txIds(totoId))
+        val entity = Datomic.database().entity(txIds(totoId))
         val PersonDog(name, age, dog) = DatomicMapping.fromEntity[PersonDog](entity)
         println(s"Found Toto $name $age $dog")
       }
@@ -338,11 +338,11 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
         println(s"5 - Provisioned more data... TX: $tx")
         val txIds = tx.tempidMap
         println(s"5 - totoId:${txIds(totoId)} tutuId:${txIds(tutuId)}")
-        val entityToto = Datomic.database.entity(txIds(totoId))
+        val entityToto = Datomic.database().entity(txIds(totoId))
         val t1 = DatomicMapping.fromEntity[PersonLike](entityToto)
         println(s"5 - retrieved toto:$t1")
         t1.toString must beEqualTo(PersonLike("toto", 30, Some("chocolate")).toString)
-        val entityTutu = Datomic.database.entity(txIds(tutuId))
+        val entityTutu = Datomic.database().entity(txIds(tutuId))
         val t2 = DatomicMapping.fromEntity[PersonLike](entityTutu)
         println(s"5 - retrieved tutu:$t2")
         t2 must beEqualTo(tutu)
@@ -389,7 +389,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
 
         val realTotoId = tx.resolve(totoId)
         println(s"6 - totoId:$totoId")
-        val entity = Datomic.database.entity(realTotoId)
+        val entity = Datomic.database().entity(realTotoId)
         val t = DatomicMapping.fromEntity[PersonLikes](entity)
         println(s"6 - retrieved toto:$t")
         t must beEqualTo(PersonLikes("toto", 30, Set("chocolate", "vanilla")))
@@ -455,12 +455,12 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
 
         val Seq(realMedorId, realTotoId, realTutuId) = Seq(medorId, totoId, tutuId) map tx.resolve
         println(s"7 - totoId:$totoId medorId:$medorId")
-        val entityToto = Datomic.database.entity(realTotoId)
+        val entityToto = Datomic.database().entity(realTotoId)
         val t1 = DatomicMapping.fromEntity[PersonDogOpt](entityToto)
         println(s"7 - retrieved toto:$t")
         t1.toString must beEqualTo(PersonDogOpt("toto", 30, Some(IdView(DId(realMedorId))(medor))).toString)
 
-        val entityTutu = Datomic.database.entity(realTutuId)
+        val entityTutu = Datomic.database().entity(realTutuId)
         val t2 = DatomicMapping.fromEntity[PersonDogOpt](entityTutu)
         println(s"7 - retrieved tutu:$t")
         t2 must beEqualTo(tutu)
@@ -526,7 +526,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
         println(s"8 - Provisioned more data... TX: $tx")
 
         val Seq(realMedorId, realBrutusId, realTotoId) = Seq(medorId, brutusId, totoId) map tx.resolve
-        val entity = Datomic.database.entity(realTotoId)
+        val entity = Datomic.database().entity(realTotoId)
         val t = DatomicMapping.fromEntity[PersonDogList](entity)
         t must beEqualTo(PersonDogList("toto", 30, Set(IdView(DId(realMedorId))(medor), IdView(DId(realBrutusId))(brutus))))
       }
@@ -560,11 +560,11 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
             val id = tx.resolve(idToto)
             println(s"Resolved ID: $id for tempid $idToto")
 
-            val entity = Datomic.database.entity(id)
+            val entity = Datomic.database().entity(id)
             entity must not(beNull) // Ensure entity exists
 
             // Verify arbitrary non-existent entity returns an empty key set
-            Datomic.database.entity(1234L).keySet must beEmpty
+            Datomic.database().entity(1234L).keySet must beEmpty
 
             // Double-check that resolving an unused temporary ID returns no entries
             tx.resolveEntity(idToto).keySet must not(beEmpty)

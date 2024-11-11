@@ -1,5 +1,6 @@
 package datomisca
 
+import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 
 private[datomisca] object Convert {
@@ -55,25 +56,28 @@ private[datomisca] object Convert {
       // a collection
       case coll: java.util.Collection[_] =>
         new Iterable[Any] {
-          override def iterator = new Iterator[Any] {
+          override def iterator: Iterator[Any] = new Iterator[Any] {
             private val jIter = coll.iterator.asInstanceOf[java.util.Iterator[AnyRef]]
 
-            override def hasNext = {
+            override def hasNext: Boolean = {
               val hasNext = jIter.hasNext
               hasNext
             }
 
-            override def next() = {
+            override def next(): Any = {
               val nextVal = jIter.next()
               toScala(nextVal)
             }
           }
+          
+          @tailrec
+          override def isEmpty: Boolean = coll.isEmpty
 
-          override def isEmpty = coll.isEmpty
+          @tailrec
+          override def size: Int = coll.size
 
-          override def size = coll.size
-
-          override def toString = coll.toString
+          @tailrec
+          override def toString: String = coll.toString
         }
       // otherwise
       case v =>

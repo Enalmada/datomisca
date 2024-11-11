@@ -35,7 +35,7 @@ abstract class AbstractQuery(val query: clojure.lang.IPersistentMap) {
   * @param query the rules as Clojure data.
   */
 final class QueryRules(val edn: clojure.lang.PersistentVector) extends AnyVal {
-  override def toString = edn.toString
+  override def toString: String = edn.toString
 
   def ++(that: QueryRules): QueryRules = {
     var t: clojure.lang.ITransientCollection = this.edn.asTransient()

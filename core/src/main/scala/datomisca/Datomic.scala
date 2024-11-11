@@ -1,6 +1,6 @@
 package datomisca
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 /** Main object containing: */

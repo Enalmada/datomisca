@@ -180,7 +180,7 @@ object GettingStarted {
           case (eid: Long, qname: String, qage: Long, qbirth: JDate) =>
 
             // load the entity by its entity id
-            val entity = Datomic.database.entity(eid)
+            val entity = Datomic.database().entity(eid)
 
             /*
              * get the value for the name attribute
@@ -232,7 +232,7 @@ object GettingStarted {
 
     Datomic.shutdown(true)
 
-    // IF RUNNING FROM SBT RUNTIME : 
+    // IF RUNNING FROM SBT RUNTIME :
     // without this, in SBT, if you run the program 2x, it fails
     // with weird cache exception linked to the way SBT manages
     // execution context and classloaders...

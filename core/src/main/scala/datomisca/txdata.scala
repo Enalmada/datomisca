@@ -23,19 +23,19 @@ trait TxData {
 final class AddFact(val id: DId, attr: Keyword, value: AnyRef) extends TxData with TempIdentified {
   override def toTxData: AnyRef =
     datomic.Util.list(Namespace.DB / "add", id.toDatomicId, attr, value)
-  override def toString = toTxData.toString
+  override def toString: String = toTxData.toString
 }
 
 final class RetractFact(val id: AnyRef, attr: Keyword, value: AnyRef) extends TxData with FinalIdentified {
   override def toTxData: AnyRef =
     datomic.Util.list(Namespace.DB / "retract", id, attr, value)
-  override def toString = toTxData.toString
+  override def toString: String = toTxData.toString
 }
 
 final class RetractEntity(val id: AnyRef) extends TxData with FinalIdentified {
   def toTxData: AnyRef =
     datomic.Util.list(Namespace.DB.FN / "retractEntity", id)
-  override def toString = toTxData.toString
+  override def toString: String = toTxData.toString
 }
 
 class PartialAddEntity(val props: Map[Keyword, AnyRef]) {
@@ -43,7 +43,7 @@ class PartialAddEntity(val props: Map[Keyword, AnyRef]) {
   def ++(other: PartialAddEntity) = new PartialAddEntity(props ++ other.props)
 
   def toMap = props
-  override def toString = props.toString
+  override def toString: String = props.toString
 }
 
 object PartialAddEntity {
@@ -54,17 +54,17 @@ object PartialAddEntity {
 final class AddEntity(val id: DId, partialProps: Map[Keyword, AnyRef]) extends PartialAddEntity(partialProps + (Namespace.DB / "id" -> id.toDatomicId)) with TxData with TempIdentified {
 
   def toTxData: AnyRef = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     props.asJava
   }
 
-  override def toString = toTxData.toString
+  override def toString: String = toTxData.toString
 }
 
 final case class AddIdent(ident: Keyword, partition: Partition = Partition.USER) extends TxData with KeywordIdentified {
-  def toTxData = new AddFact(DId(partition), Namespace.DB / "ident", ident).toTxData
+  def toTxData: AnyRef = new AddFact(DId(partition), Namespace.DB / "ident", ident).toTxData
 
-  override def toString = toTxData.toString
+  override def toString: String = toTxData.toString
 }
 
 

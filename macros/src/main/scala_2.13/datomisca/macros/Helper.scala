@@ -1,14 +1,14 @@
 package datomisca
 package macros
 
-import scala.reflect.macros.whitebox.Context
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.{lang => jl}
 import java.{math => jm}
 import clojure.{lang => clj}
 
-private[datomisca] class Helper[C <: Context](val c: C) {
+import scala.reflect.macros.whitebox
+
+private[datomisca] class Helper[C <: whitebox.Context](val c: C) {
   import c.universe._
 
   private def abortWithMessage(message: String) =
@@ -19,8 +19,8 @@ private[datomisca] class Helper[C <: Context](val c: C) {
       literalBoolean(b)
     case s: java.lang.String =>
       q"$s"
-    case c: java.lang.Character =>
-      literalCharacter(c)
+    case ch: java.lang.Character =>
+      literalCharacter(ch)
     case s: clj.Symbol =>
       literalCljSymbol(s, stk)
     case k: clj.Keyword =>
@@ -56,7 +56,7 @@ private[datomisca] class Helper[C <: Context](val c: C) {
   def literalCljSymbol(s: clj.Symbol, stk: List[c.Tree]): c.Tree = {
     val m = s.meta
     if (m == null) {
-      if (s.getName() == "!") {
+      if (s.getName == "!") {
         stk match {
           case t :: nextStk =>
             if (t.tpe =:= typeOf[String]) {
@@ -67,16 +67,16 @@ private[datomisca] class Helper[C <: Context](val c: C) {
           case _ => abortWithMessage("The symbol '!' is reserved by Datomisca")
         }
       } else {
-        q"_root_.clojure.lang.Symbol.intern(${s.getNamespace()}, ${s.getName()})"
+        q"_root_.clojure.lang.Symbol.intern(${s.getNamespace}, ${s.getName})"
       }
     } else {
       val metaT = literalMap(m, stk)
-      q"_root_.clojure.lang.Symbol.intern(${s.getNamespace()}, ${s.getName()}).withMeta($metaT).asInstanceOf[clojure.lang.Symbol]"
+      q"_root_.clojure.lang.Symbol.intern(${s.getNamespace}, ${s.getName}).withMeta($metaT).asInstanceOf[clojure.lang.Symbol]"
     }
   }
 
   def literalCljKeyword(k: clj.Keyword): c.Tree =
-    q"_root_.clojure.lang.Keyword.intern(${k.getNamespace()}, ${k.getName()})"
+    q"_root_.clojure.lang.Keyword.intern(${k.getNamespace}, ${k.getName})"
 
   def literalLong(l: jl.Long): c.Tree =
     q"new _root_.java.lang.Long(${l.longValue})"
@@ -117,7 +117,7 @@ private[datomisca] class Helper[C <: Context](val c: C) {
       builder += q"${freshName}.put($keyT, $valT)"
     }
     builder += q"_root_.clojure.lang.PersistentArrayMap.create($freshName)"
-    q"{ ..${builder.result} }"
+    q"{ ..${builder.result()} }"
   }
 
   def literalSet(coll: clj.PersistentHashSet, stk: List[c.Tree]): c.Tree = {

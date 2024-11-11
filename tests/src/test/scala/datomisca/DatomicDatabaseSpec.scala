@@ -155,7 +155,7 @@ class DatomicDatabaseSpec extends Specification {
         } yield {
           val qPasswordHash = Query("""[:find ?v :in $ :where [_ :user/passwordHash ?v]]""")
 
-          println("Find PasswordHash:" + Datomic.q(qPasswordHash, Datomic.database))
+          println("Find PasswordHash:" + Datomic.q(qPasswordHash, Datomic.database()))
 
           Datomic.q(
             Query("""
@@ -171,15 +171,15 @@ class DatomicDatabaseSpec extends Specification {
           ) map {
             case e: Long =>
               println(s"Found e: $e")
-              Datomic.database.touch(e)
+              Datomic.database().touch(e)
           }
 
-          val datoms = Datomic.database.datoms(Database.AEVT, user / "passwordHash")
+          val datoms = Datomic.database().datoms(Database.AEVT, user / "passwordHash")
           println(s"Datoms: $datoms")
 
           ///////////////////////////////////////////////////////////////////
           // filtered db cannot
-          val passwordHashId = Datomic.database.entid(user / "passwordHash")
+          val passwordHashId = Datomic.database().entid(user / "passwordHash")
           println(s"passwordHashId: $passwordHashId")
 
           val filteredDb = Datomic.database filter { (_, datom) =>
@@ -222,7 +222,7 @@ class DatomicDatabaseSpec extends Specification {
           val qCount = Query("""
             [:find ?e :in $ :where [?e :story/url ]]
           """)
-          val count = Datomic.q(qCount, Datomic.database).size
+          val count = Datomic.q(qCount, Datomic.database()).size
           println(s"Found $count entities")
 
           // same query, filtered to stories that have been published.

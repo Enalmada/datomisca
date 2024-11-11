@@ -1,12 +1,12 @@
 /*
  * Copyright 2012 Pellucid and Zenexity
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ object SchemaEntity {
 
     def ++=[DD <: AnyRef, Card <: Cardinality, Coll, T]
           (attrVal: (Attribute[DD, Card], Coll))
-          (implicit ev1: Coll <:< Traversable[T], ev2: Attribute2FactWriter[DD, Card, T])
+          (implicit ev1: Coll <:< Iterable[T], ev2: Attribute2FactWriter[DD, Card, T])
           : this.type = {
       val attr = attrVal._1
       val coll = attrVal._2
@@ -69,7 +69,7 @@ object SchemaEntity {
       new PartialAddEntity(builder.result())
 
     def withId[T](id: T)(implicit ev: AsEntityId[T]): AddEntity =
-      new AddEntity(ev.conv(id), builder.result)
+      new AddEntity(ev.conv(id), builder.result())
   }
 
   def newBuilder: SchemaEntityBuilder = new SchemaEntityBuilder
