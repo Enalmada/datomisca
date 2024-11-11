@@ -1,12 +1,12 @@
 /*
  * Copyright 2012 Pellucid and Zenexity
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ object Attribute2FactWriter {
     * for an attribute with value type `DD` as
     * its corresponding Datomic type `DD`.
     */
-  implicit def oneValue[DD <: AnyRef, Card <: Cardinality, T](implicit ev: ToDatomic[DD, T]) =
+  implicit def oneValue[DD <: AnyRef, Card <: Cardinality, T](implicit ev: ToDatomic[DD, T]): Attribute2FactWriter[DD, Card, T] =
     new Attribute2FactWriter[DD, Card, T] {
       override def convert(attr: Attribute[DD, Card], t: T) =
         (attr.ident -> ev.to(t))
@@ -51,7 +51,7 @@ object Attribute2FactWriter {
     * (see [[AsDatomicRef]]) then we can write a value of `T`
     * as an entity id reference for a reference attribute.
     */
-  implicit def oneRef[Card <: Cardinality, T](implicit ev: AsDatomicRef[T]) =
+  implicit def oneRef[Card <: Cardinality, T](implicit ev: AsDatomicRef[T]): Attribute2FactWriter[DatomicRef.type, Card, T] =
     new Attribute2FactWriter[DatomicRef.type, Card, T] {
       override def convert(attr: Attribute[DatomicRef.type, Card], t: T) =
         (attr.ident -> ev.toDatomicRef(t))
@@ -62,7 +62,7 @@ object Attribute2FactWriter {
     * then we can write a value of `T`
     * as an entity id reference for a reference attribute.
     */
-  implicit def oneIdView[Card <: Cardinality, T, U](implicit ev: T <:< IdView[U]) =
+  implicit def oneIdView[Card <: Cardinality, T, U](implicit ev: T <:< IdView[U]): Attribute2FactWriter[DatomicRef.type, Card, T] =
     new Attribute2FactWriter[DatomicRef.type, Card, T] {
       override def convert(attr: Attribute[DatomicRef.type, Card], t: T) =
         (attr.ident -> (ev(t).id: java.lang.Long))

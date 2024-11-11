@@ -4,7 +4,6 @@ import org.specs2.mutable._
 import org.specs2.specification.BeforeAfterAll
 import scala.concurrent._
 import scala.concurrent.duration.Duration
-import ExecutionContext.Implicits.global
 
 class DatomicQuerySpec extends Specification with BeforeAfterAll {
 
@@ -43,9 +42,9 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
           :where  [ ?e :person/name ?n ]
                   [ ?e :person/character :person.character/violent ]
         ]
-      """), Datomic.database) map {
+      """), Datomic.database()) map {
         case (e: Long, n: String) =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
           println(s"1 - entity: $e name: $n - e: ${entity.get(person / "character")}")
       }
 
@@ -58,9 +57,9 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
       val q = Query("""
         [:find ?e :where [?e :person/name]]
       """)
-      Datomic.q(q, Datomic.database) map {
+      Datomic.q(q, Datomic.database()) map {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
           println(s"2 - entity: $e name: ${entity.get(person / "name")} - e: ${entity.get(person / "character")}")
       }
 
@@ -78,7 +77,7 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
         ]
       """), Datomic.database, Seq("toto", "tata")) map {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
           println(s"3 - entity: $e name: ${entity.get(person / "name")} - e: ${entity.get(person / "character")}")
       }
 
@@ -119,7 +118,7 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
          :where [(fulltext $ :person/name "toto") [[ ?e ?n ]]]
         ]
       """)
-      Datomic.q(q, Datomic.database) map {
+      Datomic.q(q, Datomic.database()) map {
         case (e: Long, n: String) =>
           println(s"5 - entity: $e name: $n")
       }
@@ -166,7 +165,7 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
         ]
       """)
 
-      Datomic.q(q, Datomic.database) map {
+      Datomic.q(q, Datomic.database()) map {
         case (e: Long, name: String) =>
           println(s"e: $e - name: $name")
           name must beEqualTo("tutu")
@@ -181,9 +180,9 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
       val q = Query("""
         [:find ?e :where [?e :person/name]]
       """)
-      Datomic.q(q, Datomic.database) map {
+      Datomic.q(q, Datomic.database()) map {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
           println(s"12 - entity: $e name: ${entity.get(person / "name")} - e: ${entity.get(person / "character")}")
       }
 

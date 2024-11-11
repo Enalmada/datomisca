@@ -203,13 +203,13 @@ object Accounts {
 
     val dumpAcc: (Any => Unit) = {
       case eid: Long =>
-        val entity = Datomic.database.entity(eid)
+        val entity = Datomic.database().entity(eid)
         println(entity.toMap)
     }
 
     val dumpTx: (Any => Unit) = {
       case eid: Long =>
-        val entity = Datomic.database.entity(eid)
+        val entity = Datomic.database().entity(eid)
         def getName(entity: Entity, kw: Keyword) =
           entity.as[Entity](kw).as[String](name.ident)
         println(
@@ -220,11 +220,11 @@ object Accounts {
     }
 
     println("All accounts")
-    Datomic.q(queryAccounts, Datomic.database) foreach dumpAcc
+    Datomic.q(queryAccounts, Datomic.database()) foreach dumpAcc
     println()
 
     println("All transactions")
-    Datomic.q(queryAllTransactions, Datomic.database) foreach dumpTx
+    Datomic.q(queryAllTransactions, Datomic.database()) foreach dumpTx
     println()
 
     println("Issuers's account")

@@ -234,9 +234,9 @@ class DatomicMapping2Spec extends Specification {
               [ :find ?e
                 :where [?e :person/name "toto"]
               ]
-            """), Datomic.database).head match {
+            """), Datomic.database()).head match {
               case e: Long =>
-                val entity = Datomic.database.entity(e)
+                val entity = Datomic.database().entity(e)
                 println(
                   "dentity age:" + entity.getAs[Long](person / "age") +
                   " name:" + entity(person / "name") +
@@ -255,7 +255,6 @@ class DatomicMapping2Spec extends Specification {
     }
 
     "read case class with ID" in {
-      import scala.util.{Try, Success, Failure}
 
       implicit val conn = Datomic.connect(uri)
 
@@ -263,9 +262,9 @@ class DatomicMapping2Spec extends Specification {
         [ :find ?e
           :where [?e :dog/name "medor"]
         ]
-      """), Datomic.database).head match {
+      """), Datomic.database()).head match {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
           DatomicMapping.fromEntity[Dog](entity) must beEqualTo(medor.copy(id=Some(realMedorId)))
       }
 
@@ -273,9 +272,9 @@ class DatomicMapping2Spec extends Specification {
         [ :find ?e
           :where [?e :person/name "toto"]
         ]
-      """), Datomic.database).head match {
+      """), Datomic.database()).head match {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
           val realMedor = medor.copy(id=Some(realMedorId))
           val realDoggy1 = doggy1.copy(id=Some(realDoggy1Id))
           val realDoggy2 = doggy2.copy(id=Some(realDoggy2Id))
@@ -300,9 +299,9 @@ class DatomicMapping2Spec extends Specification {
         [ :find ?e
           :where [?e :person/name "toto2"]
         ]
-      """), Datomic.database).head match {
+      """), Datomic.database()).head match {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
           DatomicMapping.fromEntity[Person3](entity) must beEqualTo(
             toto2.copy(
               id=realToto2Id
@@ -313,7 +312,6 @@ class DatomicMapping2Spec extends Specification {
     }
 
     "get entity fields from attributes" in {
-      import scala.util.{Try, Success, Failure}
 
       implicit val conn = Datomic.connect(uri)
 
@@ -321,9 +319,9 @@ class DatomicMapping2Spec extends Specification {
         [ :find ?e
           :where [?e :person/name "toto"]
         ]
-      """), Datomic.database).head match {
+      """), Datomic.database()).head match {
         case e: Long =>
-          val entity = Datomic.database.entity(e)
+          val entity = Datomic.database().entity(e)
 
           entity(PersonSchema.name) must beEqualTo("toto")
 
@@ -333,14 +331,14 @@ class DatomicMapping2Spec extends Specification {
 
           entity.as[Long](person / "age") must beEqualTo(30)
 
-          val characters  = entity(PersonSchema.characters)
-          val characters2 = entity.getAs[Set[Keyword]](person / "characters")
+          // val characters  = entity(PersonSchema.characters)
+          // val characters2 = entity.getAs[Set[Keyword]](person / "characters")
 
           entity.as[java.util.Date](person / "birth") must beEqualTo(birthDate)
 
           entity.get(PersonSchema.birth) must beEqualTo(Some(birthDate))
 
-          val dogValue0 = entity.getAs[Entity](person / "dog")
+          // val dogValue0 = entity.getAs[Entity](person / "dog")
 
           entity.getIdView[Dog](PersonSchema.dog) must beEqualTo(Some(IdView(realMedorId)(medor.copy(id=Some(realMedorId)))))
 

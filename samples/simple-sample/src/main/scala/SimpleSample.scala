@@ -86,7 +86,7 @@ object GettingStarted {
         results.headOption.map{
           case (e: Long, age: Long) =>
             // retrieves again the entity directly by its ID
-            val entity = Datomic.database.entity(e)
+            val entity = Datomic.database().entity(e)
 
             val johnName = entity.as[String](Person.person / "name")
             val johnAge = entity.as[Long](Person.person / "age")

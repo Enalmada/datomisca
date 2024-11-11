@@ -1,12 +1,12 @@
 /*
  * Copyright 2012 Pellucid and Zenexity
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 package datomisca
 package functional
 
-import scala.language.higherKinds
 import scala.language.implicitConversions
 
 
@@ -67,9 +66,9 @@ trait Monad[M[_]] {
 
 
 trait CombinatorImplicits {
-  implicit def RDCombinatorOpsWrapper[M[_] <: EntityMapper[_], A](ma: M[A])(implicit combi: Combinator[M]) = new CombinatorOps(ma)(combi)
+  implicit def RDCombinatorOpsWrapper[M[_] <: EntityMapper[_], A](ma: M[A])(implicit combi: Combinator[M]): CombinatorOps[M, A] = new CombinatorOps(ma)(combi)
 
-  implicit def RDCombinatorWrapper[M[_] <: EntityReader[_]](implicit monad: Monad[M]) = new Combinator[M] {
+  implicit def RDCombinatorWrapper[M[_] <: EntityReader[_]](implicit monad: Monad[M]): Combinator[M] = new Combinator[M] {
     def apply[A, B](ma: M[A], mb: M[B]): M[A ~ B] = monad.bind(ma, (a: A) => monad.bind(mb, (b: B) => monad.unit(new ~(a, b)) ))
   }
 

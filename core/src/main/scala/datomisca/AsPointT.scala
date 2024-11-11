@@ -47,13 +47,13 @@ sealed trait AsPointT[T] {
 object AsPointT {
 
   /** Basis T and transaction entity id values as `Long` are points in time. */
-  implicit val long =
+  implicit val long: AsPointT[Long] =
     new AsPointT[Long] {
       override protected[datomisca] def conv(l: Long) = l: java.lang.Long
     }
 
   /** Transaction time stamps as `java.util.Date` are points in time. */
-  implicit val jDate =
+  implicit val jDate: AsPointT[JDate] =
     new AsPointT[JDate] {
       override protected[datomisca] def conv(date: JDate) = date
     }

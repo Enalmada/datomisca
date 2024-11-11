@@ -48,7 +48,7 @@ private[datomisca] object QueryExecutor {
           builder += e.getMessage
           e = e.getCause
         }
-        throw new QueryProcessingException(e, builder.result)
+        throw new QueryProcessingException(e, builder.result())
       case NonFatal(ex) =>
         throw new QueryException(ex)
     }
@@ -78,12 +78,12 @@ private[datomisca] object QueryExecutor {
   private[datomisca] def execute[OutArgs](q: AbstractQuery, in: Seq[AnyRef])(implicit outConv: QueryResultToTuple[OutArgs]): Iterable[OutArgs] = {
     new Iterable[OutArgs] {
       private val jColl: ju.Collection[ju.List[AnyRef]] = execQuery(q, in)
-      override def isEmpty = jColl.isEmpty
-      override def size = jColl.size
-      override def iterator = new Iterator[OutArgs] {
+      override def isEmpty: Boolean = jColl.isEmpty
+      override def size: Int = jColl.size
+      override def iterator: Iterator[OutArgs] = new Iterator[OutArgs] {
         private val jIter: ju.Iterator[ju.List[AnyRef]] = jColl.iterator
-        override def hasNext = jIter.hasNext
-        override def next() = outConv.toTuple(jIter.next())
+        override def hasNext: Boolean = jIter.hasNext
+        override def next(): OutArgs = outConv.toTuple(jIter.next())
       }
     }
   }

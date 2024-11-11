@@ -1,12 +1,12 @@
 /*
  * Copyright 2012 Pellucid and Zenexity
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,10 +62,10 @@ object Attribute2EntityReaderInj {
     * [[Entity]]s or [[Keyword]]s, therefore we can only say that
     * the return type is a `Set` of `Any`.
     */
-  implicit val attr2EntityReaderManyDRef2DD =
+  implicit val attr2EntityReaderManyDRef2DD: Attribute2EntityReaderInj[DatomicRef.type, Cardinality.many.type, Set[Any]] =
     new Attribute2EntityReaderInj[DatomicRef.type, Cardinality.many.type, Set[Any]] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]) = new EntityReader[Set[Any]] {
-        override def read(entity: Entity) =
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]): EntityReader[Set[Any]] = new EntityReader[Set[Any]] {
+        override def read(entity: Entity): Set[Any] =
           entity.get(attr.ident) map { case c: Iterable[Any] => c.toSet } getOrElse (Set.empty)
       }
     }
@@ -75,10 +75,10 @@ object Attribute2EntityReaderInj {
     * then we can read an `A`
     * for an attribute with value type `DD`.
     */
-  implicit def attr2EntityReaderOne[DD <: AnyRef, A](implicit conv: FromDatomicInj[DD, A]) =
+  implicit def attr2EntityReaderOne[DD <: AnyRef, A](implicit conv: FromDatomicInj[DD, A]): Attribute2EntityReaderInj[DD, Cardinality.one.type, A] =
     new Attribute2EntityReaderInj[DD, Cardinality.one.type, A] {
-      override def convert(attr: Attribute[DD, Cardinality.one.type]) = new EntityReader[A] {
-        override def read(entity: Entity) = {
+      override def convert(attr: Attribute[DD, Cardinality.one.type]): EntityReader[A] = new EntityReader[A] {
+        override def read(entity: Entity): A = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
             conv.from(o.asInstanceOf[DD])
@@ -93,10 +93,10 @@ object Attribute2EntityReaderInj {
     * then we can read a `Set` of `A`
     * for a many attribute with value type `DD`.
     */
-  implicit def attr2EntityReaderMany[DD <: AnyRef, A](implicit conv: FromDatomicInj[DD, A]) =
+  implicit def attr2EntityReaderMany[DD <: AnyRef, A](implicit conv: FromDatomicInj[DD, A]): Attribute2EntityReaderInj[DD, Cardinality.many.type, Set[A]] =
     new Attribute2EntityReaderInj[DD, Cardinality.many.type, Set[A]] {
-      override def convert(attr: Attribute[DD, Cardinality.many.type]) = new EntityReader[Set[A]] {
-        override def read(entity: Entity) = {
+      override def convert(attr: Attribute[DD, Cardinality.many.type]): EntityReader[Set[A]] = new EntityReader[Set[A]] {
+        override def read(entity: Entity): Set[A] = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
             o match {
@@ -151,10 +151,10 @@ object Attribute2EntityReaderCast {
     * (see [[FromDatomic]]) then we can read an `A`
     * for an attribute with value type `DD`.
     */
-  implicit def attr2EntityReaderCastOne[DD <: AnyRef, A](implicit conv: FromDatomic[DD, A]) =
+  implicit def attr2EntityReaderCastOne[DD <: AnyRef, A](implicit conv: FromDatomic[DD, A]): Attribute2EntityReaderCast[DD, Cardinality.one.type, A] =
     new Attribute2EntityReaderCast[DD, Cardinality.one.type, A] {
-      override def convert(attr: Attribute[DD, Cardinality.one.type]) = new EntityReader[A] {
-        override def read(entity: Entity) = {
+      override def convert(attr: Attribute[DD, Cardinality.one.type]): EntityReader[A] = new EntityReader[A] {
+        override def read(entity: Entity): A = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
             conv.from(o.asInstanceOf[DD])
@@ -169,10 +169,10 @@ object Attribute2EntityReaderCast {
     * (see [[FromDatomic]]) then we can read a `Set` of `A`
     * for a many attribute with value type `DD`.
     */
-  implicit def attr2EntityReaderCastMany[DD <: AnyRef, A](implicit conv: FromDatomic[DD, A]) =
+  implicit def attr2EntityReaderCastMany[DD <: AnyRef, A](implicit conv: FromDatomic[DD, A]): Attribute2EntityReaderCast[DD, Cardinality.many.type, Set[A]] =
     new Attribute2EntityReaderCast[DD, Cardinality.many.type, Set[A]] {
-      override def convert(attr: Attribute[DD, Cardinality.many.type]) = new EntityReader[Set[A]] {
-        override def read(entity: Entity) = {
+      override def convert(attr: Attribute[DD, Cardinality.many.type]): EntityReader[Set[A]] = new EntityReader[Set[A]] {
+        override def read(entity: Entity): Set[A] = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
             o match {
@@ -199,9 +199,9 @@ object Attribute2EntityReaderCast {
     * If the referenced entity is an ident entity, then we can still get the
     * entity id from the ident keyword.
     */
-  implicit val attr2EntityReaderCastIdOnly =
+  implicit val attr2EntityReaderCastIdOnly: Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, Long] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, Long] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]) = new EntityReader[Long] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]): EntityReader[Long] = new EntityReader[Long] {
         override def read(entity: Entity) = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
@@ -227,9 +227,9 @@ object Attribute2EntityReaderCast {
     * If the referenced entities are ident entities, then we can still get the
     * entity ids from the ident keywords.
     */
-  implicit val attr2EntityReaderCastManyIdOnly =
+  implicit val attr2EntityReaderCastManyIdOnly: Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[Long]] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[Long]] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]) = new EntityReader[Set[Long]] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]): EntityReader[Set[Long]] = new EntityReader[Set[Long]] {
         override def read(entity: Entity) = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
@@ -267,9 +267,9 @@ object Attribute2EntityReaderCast {
     *
     * If the referenced entity is not an ident entity, then an exception will be thrown.
     */
-  implicit def attr2EntityReaderCastKeyword[K](implicit fromKeyword: Keyword => K) =
+  implicit def attr2EntityReaderCastKeyword[K](implicit fromKeyword: Keyword => K): Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, K] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, K] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]) = new EntityReader[K] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]): EntityReader[K] = new EntityReader[K] {
         override def read(entity: Entity) = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
@@ -296,9 +296,9 @@ object Attribute2EntityReaderCast {
     *
     * If the referenced entities are not all ident entities, then an exception will be thrown.
     */
-  implicit def attr2EntityReaderCastManyKeyword[K](implicit fromKeyword: Keyword => K) =
+  implicit def attr2EntityReaderCastManyKeyword[K](implicit fromKeyword: Keyword => K): Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[K]] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[K]] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]) = new EntityReader[Set[K]] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]): EntityReader[Set[K]] = new EntityReader[Set[K]] {
         override def read(entity: Entity) = {
           val o  = entity.entity.get(attr.ident)
           if (o ne null)
@@ -331,9 +331,9 @@ object Attribute2EntityReaderCast {
     * then we can read the entity referenced by a
     * cardinality one reference attribute as an `A`.
     */
-  implicit def attr2EntityReaderOneObj[A](implicit er: EntityReader[A]) =
+  implicit def attr2EntityReaderOneObj[A](implicit er: EntityReader[A]): Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, A] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, A] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]) = new EntityReader[A] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]): EntityReader[A] = new EntityReader[A] {
         override def read(entity: Entity) = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
@@ -356,9 +356,9 @@ object Attribute2EntityReaderCast {
     * then we can read set of entities referenced by a
     * cardinality many reference attribute as a `Set` of `A`.
     */
-  implicit def attr2EntityReaderManyObj[A](implicit er: EntityReader[A]) =
+  implicit def attr2EntityReaderManyObj[A](implicit er: EntityReader[A]): Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[A]] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[A]] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]) = new EntityReader[Set[A]] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]): EntityReader[Set[A]] = new EntityReader[Set[A]] {
         override def read(entity: Entity) = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
@@ -391,9 +391,9 @@ object Attribute2EntityReaderCast {
     * then we can read the entity referenced by a
     * cardinality one reference attribute as an [[IdView]] of `A`.
     */
-  implicit def attr2EntityReaderOneIdView[A](implicit er: EntityReader[A]) =
+  implicit def attr2EntityReaderOneIdView[A](implicit er: EntityReader[A]): Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, IdView[A]] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.one.type, IdView[A]] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]) = new EntityReader[IdView[A]] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]): EntityReader[IdView[A]] = new EntityReader[IdView[A]] {
         override def read(entity: Entity) = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)
@@ -417,9 +417,9 @@ object Attribute2EntityReaderCast {
     * then we can read set of entities referenced by a
     * cardinality many reference attribute as a `Set` of [[IdView]] of `A`.
     */
-  implicit def attr2EntityReaderManyIdView[A](implicit er: EntityReader[A]) =
+  implicit def attr2EntityReaderManyIdView[A](implicit er: EntityReader[A]): Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[IdView[A]]] =
     new Attribute2EntityReaderCast[DatomicRef.type, Cardinality.many.type, Set[IdView[A]]] {
-      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]) = new EntityReader[Set[IdView[A]]] {
+      override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]): EntityReader[Set[IdView[A]]] = new EntityReader[Set[IdView[A]]] {
         override def read(entity: Entity) = {
           val o = entity.entity.get(attr.ident)
           if (o ne null)

@@ -16,8 +16,7 @@
 
 package datomisca
 
-import scala.language.reflectiveCalls
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import java.util.Date
 
@@ -97,7 +96,7 @@ private[datomisca] class ExciseAttr(
 object Excise {
   /** Create operations to excise partialy an entity
     * @param id the targeted [[DId]] which can be a Long or a [[LookupRef]]
-    * @param excisionId the temporary ID of the excision entity 
+    * @param excisionId the temporary ID of the excision entity
     * @param attr attribute to excised from entity (partial excision)
     */
   def entity[T](id: T, excisionId: TempId, attr: Keyword, attrs: Keyword*)(implicit ev: AsPermanentEntityId[T]) =
