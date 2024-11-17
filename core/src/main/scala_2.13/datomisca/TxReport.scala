@@ -1,4 +1,22 @@
+/*
+ * Copyright 2012 Pellucid and Zenexity
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 package datomisca
+
 
 class TxReport(rawReport: java.util.Map[_, _]) {
   import datomic.Connection.{DB_BEFORE, DB_AFTER, TX_DATA, TEMPIDS}
@@ -28,43 +46,38 @@ class TxReport(rawReport: java.util.Map[_, _]) {
     resolve(identified.id)
 
   def resolve(ids: DId*): Seq[Long] =
-    ids.map(resolve)
+    ids map { resolve(_) }
 
   def resolveOpt(id: DId): Option[Long] =
     Option {
       datomic.Peer.resolveTempid(dbAfter.underlying, tempids, id.toDatomicId)
-    } map (_.asInstanceOf[Long])
+    } map { id =>
+      id.asInstanceOf[Long]
+    }
 
   def resolveOpt(ids: DId*): Seq[Option[Long]] =
-    ids.map(resolveOpt)
+    ids map { resolveOpt(_) }
 
   def resolveEntity(id: DId): Entity =
     dbAfter.entity(resolve(id))
 
-  // Custom map implementation compatible with Scala 2.12 and 2.13
-  lazy val tempidMap: scala.collection.Map[DId, Long] = new scala.collection.AbstractMap[DId, Long] {
+  lazy val tempidMap = new scala.collection.immutable.Map[DId, Long] {
     override def get(tempId: DId): Option[Long] = resolveOpt(tempId)
-
     override def iterator: Iterator[(DId, Long)] =
-      throw new UnsupportedOperationException("Iterator is not supported for tempidMap")
+      throw new UnsupportedOperationException("iterator is unsupported")
 
-    // Implement + and - operators as required in Scala 2.12
-    override def +[V1 >: Long](kv: (DId, V1)): scala.collection.Map[DId, V1] =
-      throw new UnsupportedOperationException("Update is not supported for tempidMap")
+    override def removed(key: DId): scala.collection.immutable.Map[DId, Long] =
+      throw new UnsupportedOperationException("remove is unsupported")
 
-    override def -(key: DId): scala.collection.Map[DId, Long] =
-      throw new UnsupportedOperationException("Remove is not supported for tempidMap")
-
-    // Implement Scala 2.13 specific method
-    override def -(key1: DId, key2: DId, keys: DId*): scala.collection.Map[DId, Long] =
-      throw new UnsupportedOperationException("Remove is not supported for tempidMap")
+    override def updated[V1 >: Long](key: DId, value: V1): scala.collection.immutable.Map[DId, V1] =
+      throw new UnsupportedOperationException("update is unsupported")
   }
 
-  override def toString: String =
+  override def toString =
     s"""TxReport {
-       |  dbBefore: $dbBefore,
+       |  dbBefore: ${dbBefore},
        |  dbBefore.basisT: ${dbBefore.basisT}
-       |  dbAfter: $dbAfter,
+       |  dbAfter: ${dbAfter},
        |  dbAfter.basisT: ${dbAfter.basisT},
        |  txData: $txData,
        |  tempids: $tempids

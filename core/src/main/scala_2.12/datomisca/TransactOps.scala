@@ -20,60 +20,60 @@ import scala.concurrent.{Future, ExecutionContext}
 
 
 /** Provides all Datomic Database Transactor asynchronous function.
-  *
-  * Please note that those functions require :
-  *   - an implicit [[Connection]] for transaction,
-  *   - Scala scala.concurrent.ExecutionContext for Future management
-  */
+ *
+ * Please note that those functions require :
+ *   - an implicit [[Connection]] for transaction,
+ *   - Scala scala.concurrent.ExecutionContext for Future management
+ */
 private[datomisca] trait TransactOps {
 
   /** Performs an Datomic async transaction with multiple operations.
-    *
-    * {{{
-    * Datomic.transact(Seq(
-    *   AddToEntity(DId(Partition.USER))(
-    *     person / "name" -> "toto",
-    *     person / "age" -> 30L
-    *   ),
-    *   AddToEntity(DId(Partition.USER))(
-    *     person / "name" -> "tata",
-    *     person / "age" -> 54L
-    *   )
-    * )).map{ tx =>
-    *     ...
-    * }
-    * }}}
-    *
-    * @param ops a sequence of [[TxData]]
-    * @param connection the implicit [[Connection]]
-    * @param ex the implicit scala.concurrent.ExecutionContext
-    * @return A future of Transaction Report
-    *
-    */
-  def transact(ops: IterableOnce[TxData])(implicit connection: Connection, ex: ExecutionContext): Future[TxReport] = connection.transact(ops)
+   *
+   * {{{
+   * Datomic.transact(Seq(
+   *   AddToEntity(DId(Partition.USER))(
+   *     person / "name" -> "toto",
+   *     person / "age" -> 30L
+   *   ),
+   *   AddToEntity(DId(Partition.USER))(
+   *     person / "name" -> "tata",
+   *     person / "age" -> 54L
+   *   )
+   * )).map{ tx =>
+   *     ...
+   * }
+   * }}}
+   *
+   * @param ops a sequence of [[TxData]]
+   * @param connection the implicit [[Connection]]
+   * @param ex the implicit scala.concurrent.ExecutionContext
+   * @return A future of Transaction Report
+   *
+   */
+  def transact(ops: TraversableOnce[TxData])(implicit connection: Connection, ex: ExecutionContext): Future[TxReport] = connection.transact(ops)
 
   /** Performs an Datomic async transaction with multiple operations.
-    *
-    * {{{
-    * Datomic.transact(
-    *   AddToEntity(DId(Partition.USER))(
-    *     person / "name" -> "toto",
-    *     person / "age" -> 30L
-    *   ),
-    *   AddToEntity(DId(Partition.USER))(
-    *     person / "name" -> "tata",
-    *     person / "age" -> 54L
-    *   )
-    * ).map{ tx =>
-    *     ...
-    * }
-    * }}}
-    *
-    * @param ops [[TxData]]s
-    * @param connection the implicit [[Connection]]
-    * @param ex the implicit scala.concurrent.ExecutionContext
-    * @return A future of Transaction Report
-    */
+   *
+   * {{{
+   * Datomic.transact(
+   *   AddToEntity(DId(Partition.USER))(
+   *     person / "name" -> "toto",
+   *     person / "age" -> 30L
+   *   ),
+   *   AddToEntity(DId(Partition.USER))(
+   *     person / "name" -> "tata",
+   *     person / "age" -> 54L
+   *   )
+   * ).map{ tx =>
+   *     ...
+   * }
+   * }}}
+   *
+   * @param ops [[TxData]]s
+   * @param connection the implicit [[Connection]]
+   * @param ex the implicit scala.concurrent.ExecutionContext
+   * @return A future of Transaction Report
+   */
   def transact(ops: TxData*)(implicit connection: Connection, ex: ExecutionContext): Future[TxReport] = connection.transact(ops)
 
   /* Applies a sequence of operations to current database without applying the transaction.

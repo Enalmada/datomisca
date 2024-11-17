@@ -16,15 +16,15 @@
 
 package datomisca
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class ComponentAttributesSpec
-  extends FlatSpec
+  extends AnyFlatSpec
      with Matchers
      with ScalaFutures
      with DatomicFixture

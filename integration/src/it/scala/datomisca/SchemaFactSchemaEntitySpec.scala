@@ -16,16 +16,18 @@
 
 package datomisca
 
-import scala.language.reflectiveCalls
+import org.scalatest.OptionValues
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import scala.language.reflectiveCalls
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class SchemaFactSchemaEntitySpec
-  extends FlatSpec
+  extends AnyFlatSpec
      with Matchers
      with OptionValues
      with ScalaFutures

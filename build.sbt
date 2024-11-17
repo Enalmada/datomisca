@@ -4,12 +4,12 @@ import sbt.librarymanagement.Resolver
 
 ThisBuild / organization := "com.github.enalmada"
 
-ThisBuild / version := "0.8.4"
+ThisBuild / version := "0.8.5"
 
 ThisBuild / scalaVersion := "2.13.15"
 
 // If supporting multiple Scala versions, make sure crossScalaVersions is set.
-// ThisBuild / crossScalaVersions := Seq("2.12.18", "2.13.15")
+ThisBuild / crossScalaVersions := Seq("2.12.18", "2.13.15")
 
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",

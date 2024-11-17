@@ -19,11 +19,12 @@ package datomisca
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 
 class DatabaseFilteringSpec
-  extends FlatSpec
+  extends AnyFlatSpec
      with Matchers
      with DatomicFixture
      with AwaitHelper

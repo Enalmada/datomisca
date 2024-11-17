@@ -1,23 +1,6 @@
-/*
- * Copyright 2012 Pellucid and Zenexity
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package datomisca
 
 import scala.language.reflectiveCalls
-
 
 object PersonSampleData extends SampleData {
 
@@ -31,12 +14,12 @@ object PersonSampleData extends SampleData {
 
     val idAttr = Attribute(ns.person / "id", SchemaType.long, Cardinality.one).withUnique(Unique.identity)
     val nameAttr = Attribute(ns.person / "name", SchemaType.string, Cardinality.one)
-                    .withDoc("A person's name")
-                    .withFullText(true)
+      .withDoc("A person's name")
+      .withFullText(true)
     val ageAttr  = Attribute(ns.person / "age",  SchemaType.long, Cardinality.one)
-                    .withDoc("A Person's age")
+      .withDoc("A Person's age")
     val moodAttr = Attribute(ns.person / "mood", SchemaType.ref, Cardinality.many)
-                    .withDoc("A person's mood")
+      .withDoc("A person's mood")
 
     val happyMood    = AddIdent(ns.person.mood / "happy")
     val sadMood      = AddIdent(ns.person.mood / "sad")
@@ -45,6 +28,7 @@ object PersonSampleData extends SampleData {
     val angryMood    = AddIdent(ns.person.mood / "angry")
 
   }
+
   import Schema._
 
   override val schema = Seq(
@@ -52,7 +36,6 @@ object PersonSampleData extends SampleData {
     happyMood, sadMood, excitedMood,
     stressedMood, angryMood
   )
-
 
   val toto = new {
     val id  = 123
@@ -67,7 +50,7 @@ object PersonSampleData extends SampleData {
       += (nameAttr -> toto.name)
       += (ageAttr  -> toto.age)
       ++= (moodAttr -> toto.moods)
-  ) withId DId(Partition.USER)
+    ) withId DId(Partition.USER)
 
   val tutu = new {
     val name  = "tutu"
@@ -80,7 +63,7 @@ object PersonSampleData extends SampleData {
       += (nameAttr -> tutu.name)
       += (ageAttr  -> tutu.age)
       ++= (moodAttr -> tutu.moods)
-  ) withId DId(Partition.USER)
+    ) withId DId(Partition.USER)
 
   val tata = new {
     val name  = "tata"
@@ -93,15 +76,16 @@ object PersonSampleData extends SampleData {
       += (nameAttr -> tata.name)
       += (ageAttr  -> tata.age)
       ++= (moodAttr -> tata.moods)
-  ) withId DId(Partition.USER)
+    ) withId DId(Partition.USER)
 
   override val txData = Seq(
     totoTxData, tutuTxData, tataTxData
   )
 
-  val queryPersonIdByName = Query(s"""
+  // Hardcoded attribute path for :person/name
+  val queryPersonIdByName = Query("""
     [:find ?e
-     :in $$ ?name
-     :where [?e ${nameAttr} ?name]]
+     :in $ ?name
+     :where [?e :person/name ?name]]
   """)
 }

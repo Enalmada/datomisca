@@ -16,14 +16,16 @@
 
 package datomisca
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
-
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
+import org.scalatest.concurrent.ScalaFutures
 
 class AggregatesSpec
-  extends FlatSpec
-     with Matchers
-     with OptionValues
-     with DatomicFixture
+  extends AnyFlatSpec
+    with Matchers
+    with OptionValues
+    with DatomicFixture
 {
 
   val countObjects = Query("""

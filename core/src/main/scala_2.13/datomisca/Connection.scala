@@ -17,12 +17,11 @@
 
 package datomisca
 
-import scala.concurrent._
-import scala.util.control.NonFatal
+import datomic.ListenableFuture
 
 import java.{util => ju}
-
-import datomic.ListenableFuture
+import scala.concurrent._
+import scala.util.control.NonFatal
 
 
 class Connection(val connection: datomic.Connection) extends AnyVal {

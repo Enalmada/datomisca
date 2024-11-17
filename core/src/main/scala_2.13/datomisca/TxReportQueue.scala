@@ -1,10 +1,9 @@
 package datomisca
 
-import scala.jdk.CollectionConverters._
-import scala.concurrent.duration._
-
-import java.{util => ju}
 import java.util.{concurrent => juc}
+import java.{util => ju}
+import scala.concurrent.duration._
+import scala.jdk.CollectionConverters._
 
 /** The data queue associated with a connection. */
 class TxReportQueue(

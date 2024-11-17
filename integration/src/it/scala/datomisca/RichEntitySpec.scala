@@ -16,14 +16,16 @@
 
 package datomisca
 
+import org.scalatest.OptionValues
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.reflectiveCalls
-
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 
 class RichEntitySpec
-  extends FlatSpec
+  extends AnyFlatSpec
      with Matchers
      with OptionValues
      with DatomicFixture

@@ -16,13 +16,15 @@
 
 package datomisca
 
-import scala.language.reflectiveCalls
+import org.scalatest.OptionValues
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import scala.language.reflectiveCalls
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 
 class RichAttributeSpec
-  extends FlatSpec
+  extends AnyFlatSpec
      with Matchers
      with OptionValues
      with DatomicFixture
