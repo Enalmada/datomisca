@@ -1,58 +1,37 @@
-/*
- * Copyright 2012 Pellucid and Zenexity
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package datomisca
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-
 
 class MovieGraphSampleSpec
-  extends FlatSpec
-     with Matchers
-     with DatomicFixture
-     with AwaitHelper
-{
+  extends AnyFlatSpec
+    with Matchers
+    with DatomicFixture
+    with AwaitHelper {
 
   object MovieGraphSchema {
-
     object ns {
       val actor = Namespace("actor")
       val movie = Namespace("movie")
     }
 
-    val actorName = Attribute(ns.actor / "name",    SchemaType.string, Cardinality.one) .withDoc("The name of the actor")
-    val actorActs = Attribute(ns.actor / "acts-in", SchemaType.ref,    Cardinality.many).withDoc("References to the movies the actor has acted in")
-    val actorRole = Attribute(ns.actor / "role",    SchemaType.string, Cardinality.one) .withDoc("The character name of a role in a movie")
+    val actorName = Attribute(ns.actor / "name", SchemaType.string, Cardinality.one).withDoc("The name of the actor")
+    val actorActs = Attribute(ns.actor / "acts-in", SchemaType.ref, Cardinality.many).withDoc("References to the movies the actor has acted in")
+    val actorRole = Attribute(ns.actor / "role", SchemaType.string, Cardinality.one).withDoc("The character name of a role in a movie")
 
     val movieTitle = Attribute(ns.movie / "title", SchemaType.string, Cardinality.one).withDoc("The title of the movie")
-    val movieYear  = Attribute(ns. movie / "year", SchemaType.long,   Cardinality.one).withDoc("The year the movie was released")
+    val movieYear = Attribute(ns.movie / "year", SchemaType.long, Cardinality.one).withDoc("The year the movie was released")
 
-
-    val txData = Seq(
-      actorName, actorActs, actorRole,
-      movieTitle, movieYear
-    )
+    val txData = Seq(actorName, actorActs, actorRole, movieTitle, movieYear)
   }
 
   object MovieGraphData {
+
     import MovieGraphSchema._
 
+    // Actors
     val `Carrie-Ann Moss` = SchemaFact.add(DId(Partition.USER))(actorName -> "Carrie-Ann Moss")
 
     val `Hugo Weaving`    = SchemaFact.add(DId(Partition.USER))(actorName -> "Hugo Weaving")
@@ -84,10 +63,9 @@ class MovieGraphSampleSpec
 
     val movies = Seq(`The Matrix`, `The Matrix Reloaded`, Memento)
 
-
     val graphNodesTxData = actors ++ movies
 
-
+    // In MovieGraphData, modify the graphEdgesTxData method:
     def graphEdgesTxData(tempIds: Map[DId, Long]): Seq[Seq[TxData]] = Seq(
       Seq(
         SchemaFact.add(tempIds(`Carrie-Ann Moss`.id))(actorActs -> tempIds(`The Matrix`.id)),
@@ -124,69 +102,72 @@ class MovieGraphSampleSpec
     )
   }
 
-  object MovieGraphQueries {
-    import MovieGraphSchema._
-
-    val queryFindMovieByTitle = Query(s"""
+    object MovieGraphQueries {
+      val queryFindMovieByTitle = Query(
+        """
       [:find ?title ?year
-       :in $$ ?title
+       :in $ ?title
        :where
-         [?movie ${movieTitle} ?title]
-         [?movie ${movieYear}  ?year]]
+         [?movie :movie/title ?title]
+         [?movie :movie/year  ?year]]
     """)
 
-    val queryFindMovieByTitlePrefix = Query(s"""
+      val queryFindMovieByTitlePrefix = Query(
+        """
       [:find ?title ?year
-       :in $$ ?prefix
+       :in $ ?prefix
        :where
-         [?movie ${movieTitle} ?title]
-         [?movie ${movieYear}  ?year]
-         [(.startsWith ^String ?title  ?prefix)]]
+         [?movie :movie/title ?title]
+         [?movie :movie/year  ?year]
+         [(.startsWith ^String ?title ?prefix)]]
     """)
 
-    val queryFindActorsInTitle = Query(s"""
+      val queryFindActorsInTitle = Query(
+        """
       [:find ?name
-       :in $$ ?title
+       :in $ ?title
        :where
-         [?movie ${movieTitle} ?title]
-         [?actor ${actorActs}  ?movie]
-         [?actor ${actorName}  ?name]]
+         [?movie :movie/title ?title]
+         [?actor :actor/acts-in ?movie]
+         [?actor :actor/name   ?name]]
     """)
 
-    val queryFindTitlesAndRolesForActor = Query(s"""
+      val queryFindTitlesAndRolesForActor = Query(
+        """
       [:find ?role ?title
-       :in $$ ?name
+       :in $ ?name
        :where
-         [?actor ${actorName}  ?name]
-         [?actor ${actorActs}  ?movie ?tx]
-         [?movie ${movieTitle} ?title]
-         [?tx    ${actorRole}  ?role]]
+         [?actor :actor/name   ?name]
+         [?actor :actor/acts-in ?movie ?tx]
+         [?movie :movie/title  ?title]
+         [?tx    :actor/role   ?role]]
     """)
 
-    val queryFindMoviesThatIncludeActorsInGivenMovie = Query(s"""
+      val queryFindMoviesThatIncludeActorsInGivenMovie = Query(
+        """
       [:find ?othertitle
-       :in $$ ?title
+       :in $ ?title
        :where
-         [?movie ${movieTitle} ?title]
-         [?actor ${actorActs}  ?movie]
-         [?actor ${actorActs}  ?othermovie]
-         [?othermovie ${movieTitle} ?othertitle]]
+         [?movie :movie/title ?title]
+         [?actor :actor/acts-in ?movie]
+         [?actor :actor/acts-in ?othermovie]
+         [?othermovie :movie/title ?othertitle]]
     """)
 
-    val queryFindAllMoviesWithRole = Query(s"""
+      val queryFindAllMoviesWithRole = Query(
+        """
       [:find ?title
-       :in $$ ?role
+       :in $ ?role
        :where
-         [?tx    ${actorRole}  ?role]
-         [?actor ${actorActs}  ?movie ?tx]
-         [?movie ${movieTitle} ?title]]
+         [?tx    :actor/role   ?role]
+         [?actor :actor/acts-in ?movie ?tx]
+         [?movie :movie/title  ?title]]
     """)
-
-  }
+    }
 
   "Movie Graph Sample" should "run to completion" in withDatomicDB { implicit conn =>
     import MovieGraphQueries._
-
+    implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     await {
       Datomic.transact(MovieGraphSchema.txData)
     }
@@ -216,4 +197,44 @@ class MovieGraphSampleSpec
     Datomic.q(queryFindAllMoviesWithRole, db, "Agent Smith") should have size (2)
 
   }
-}
+
+  /*
+    // And in the test section:
+    "Movie Graph Sample" should "run to completion" in withDatomicDB { implicit conn =>
+      import MovieGraphQueries._
+
+      // Transactional operations
+      println("Applying schema")
+      await(Datomic.transact(MovieGraphSchema.txData))
+      println("Schema transaction completed successfully.")
+
+      // Transact the entities
+      println("Transacting entities")
+      val txReport = await(Datomic.transact(MovieGraphData.graphNodesTxData))
+      println("Entities transaction completed successfully.")
+
+      println("Transaction Reports Temporary IDs:")
+      if (txReport.tempidMap.nonEmpty) {
+        // Proceed with edge transactions
+        val edgeData = MovieGraphData.graphEdgesTxData(txReport.tempidMap.toMap)
+        println("Transacting edges")
+        await(Datomic.transact(edgeData))
+        println("Edges transaction completed successfully.")
+
+        // Queries to validate the graph
+        val db = conn.database()
+
+        Datomic.q(queryFindMovieByTitle, db, "The Matrix") should have size 1
+        Datomic.q(queryFindMovieByTitlePrefix, db, "The Matrix") should have size 2
+        Datomic.q(queryFindActorsInTitle, db, "Memento") should have size 3
+        Datomic.q(queryFindTitlesAndRolesForActor, db, "Carrie-Ann Moss") should have size 3
+        Datomic.q(queryFindMoviesThatIncludeActorsInGivenMovie, db, "The Matrix Reloaded") should have size 3
+        Datomic.q(queryFindAllMoviesWithRole, db, "Agent Smith") should have size 2
+      } else {
+        fail("No temporary IDs resolved in transaction")
+      }
+    }
+
+   */
+  }
+

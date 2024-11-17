@@ -16,13 +16,13 @@
 
 package datomisca
 
-import org.scalatest.{FlatSpec, Matchers}
-
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 class BindingSpec
-  extends FlatSpec
-     with Matchers
-     with DatomicFixture
+  extends AnyFlatSpec
+    with Matchers
+    with DatomicFixture
 {
 
   "A Query" can "bind variables" in {

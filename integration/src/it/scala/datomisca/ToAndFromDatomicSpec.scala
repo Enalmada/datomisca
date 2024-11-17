@@ -18,7 +18,8 @@ package datomisca
 
 import scala.language.reflectiveCalls
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import Datomic.{toDatomic, fromDatomic}
 
@@ -28,7 +29,7 @@ import java.util.{Date, UUID}
 import java.net.URI
 
 
-class ToFromDatomicSpec extends FlatSpec with Matchers {
+class ToFromDatomicSpec extends AnyFlatSpec with Matchers {
 
   val ns = Namespace("test")
   val attrstring  = Attribute(ns / "string",  SchemaType.string,  Cardinality.one)

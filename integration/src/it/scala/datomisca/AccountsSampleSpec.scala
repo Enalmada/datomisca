@@ -1,3 +1,4 @@
+// AccountSampleSpec.scala
 /*
  * Copyright 2012 Pellucid and Zenexity
  *
@@ -16,16 +17,16 @@
 
 package datomisca
 
-import org.scalatest.{FlatSpec, Matchers}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 class AccountsSampleSpec
-  extends FlatSpec
-     with Matchers
-     with DatomicFixture
-     with AwaitHelper
+  extends AnyFlatSpec
+    with Matchers
+    with DatomicFixture
+    with AwaitHelper
 {
 
   object AccountsSchema {
@@ -36,20 +37,20 @@ class AccountsSampleSpec
 
     // Attributes
     val name       = Attribute(account / "name",        SchemaType.string, Cardinality.one)
-                       .withDoc("The name of the account")
-                       .withUnique(Unique.value)
-                       .withFullText(true)
+      .withDoc("The name of the account")
+      .withUnique(Unique.value)
+      .withFullText(true)
     val balance    = Attribute(account / "balance",     SchemaType.bigdec, Cardinality.one)
-                       .withDoc("The account balance")
+      .withDoc("The account balance")
     val minBalance = Attribute(account / "min-balance", SchemaType.bigdec, Cardinality.one)
-                       .withDoc("The minimum permitted balance for the account")
+      .withDoc("The minimum permitted balance for the account")
 
     val amount = Attribute(trans / "amount", SchemaType.bigdec, Cardinality.one)
-                   .withDoc("The transaction amount")
+      .withDoc("The transaction amount")
     val from   = Attribute(trans / "from",   SchemaType.ref,    Cardinality.one)
-                   .withDoc("The sending account")
+      .withDoc("The sending account")
     val to     = Attribute(trans / "to",     SchemaType.ref,    Cardinality.one)
-                   .withDoc("The receiving account")
+      .withDoc("The receiving account")
 
 
     val creditFn = AddTxFunction.typed[Long, BigDecimal](fn / "credit") ("db", "id", "amount") (lang = "clojure", partition = Partition.USER, imports = "", requires = "") {s"""
@@ -83,21 +84,21 @@ class AccountsSampleSpec
         += (name       -> "Issuer")
         += (balance    -> BigDecimal(0))
         += (minBalance -> BigDecimal(-1000))
-    ) withId DId(Partition.USER)
+      ) withId DId(Partition.USER)
 
     val bob = (
       SchemaEntity.newBuilder
         += (AccountsSchema.name -> "Bob")
         += (balance             -> BigDecimal(0))
         += (minBalance          -> BigDecimal(0))
-    ) withId DId(Partition.USER)
+      ) withId DId(Partition.USER)
 
     val alice = (
       SchemaEntity.newBuilder
         += (AccountsSchema.name -> "Alice")
         += (balance             -> BigDecimal(0))
         += (minBalance          -> BigDecimal(0))
-    ) withId DId(Partition.USER)
+      ) withId DId(Partition.USER)
 
     val sampleTxData = Seq(issuer, bob, alice)
 
@@ -110,7 +111,7 @@ class AccountsSampleSpec
           += (from   -> fromAcc)
           += (to     -> toAcc)
           += (amount -> transAmount)
-        ) withId txId
+          ) withId txId
       )
     }
 
@@ -122,33 +123,35 @@ class AccountsSampleSpec
   object AccountsQueries {
     import AccountsSchema._
 
-    val queryAccounts = Query(s"""
+    val queryAccounts = Query("""
       [:find ?a
-       :in $$
-       :where [?a ${name}]]
+       :in $
+       :where [?a :account/name]]
     """)
 
-    val findAccountByName = Query(s"""
+    val findAccountByName = Query("""
       [
         :find ?a
-        :in $$ ?name
+        :in $ ?name
         :where
-          [?a ${name} ?name]
+          [?a :account/name ?name]
       ]
     """)
 
-    val queryAllTransactions = Query(s"""
+    val queryAllTransactions = Query("""
       [:find ?tx
-       :in $$
+       :in $
        :where
-         [?tx ${amount}]]
+         [?tx :trans/amount]]
     """)
 
-    val rulesParty = Query.rules(s"""
-      [[[party ?t ?a]
-          [?t ${from} ?a]]
-       [[party ?t ?a]
-          [?t ${to} ?a]]]
+    val rulesParty = Query.rules("""
+      [
+        [(party ?t ?a)
+         [?t :trans/from ?a]]
+        [(party ?t ?a)
+         [?t :trans/to ?a]]
+      ]
     """)
 
     val queryAccountTransactions = Query("""

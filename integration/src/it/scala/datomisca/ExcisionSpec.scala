@@ -1,3 +1,4 @@
+// ExcisionSpec.scala
 /*
  * Copyright 2012 Pellucid and Zenexity
  *
@@ -18,18 +19,20 @@ package datomisca
 
 import scala.language.reflectiveCalls
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
 
 class ExcisionSpec
-  extends FlatSpec
-     with Matchers
-     with OptionValues
-     with ScalaFutures
-     with DatomicFixture
+  extends AnyFlatSpec
+    with Matchers
+    with OptionValues
+    with ScalaFutures
+    with DatomicFixture
 {
 
   "Datomic’s excision" can "excise specific entities" in withSampleDatomicDB(PersonSampleData) { implicit conn =>
@@ -90,12 +93,12 @@ class ExcisionSpec
       val dbAfter = txReport.dbAfter
 
       Datomic.q(
-        Query(s"""
+        Query("""
           [:find ?e
-           :in $$ ?excised
+           :in $ ?excised
            :where
             [?e :db/excise ?excised]
-            [?e :db.excise/attrs ${PersonSampleData.Schema.ageAttr}]]
+            [?e :db.excise/attrs :person/age]]
         """),
         dbAfter,
         e).headOption.value should be (exId)

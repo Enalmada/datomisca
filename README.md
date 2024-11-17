@@ -23,8 +23,14 @@ Datomisca uses Scala concepts to enhance the Datomic experience for Scala develo
 ## Versions
 * **TRUNK** [not released in the repository, yet]
     * Fancy contributing something? :-)
+* **0.8.5** [release on 2024-11-17]
+  * scala 2.13.15, back support 2.12
+* **0.8.4** [release on 2024-11-10]
+  * scala 2.13.15
+* **0.8.3** [release on 2024-11-10]
+  * scala 2.13.11
 * **0.7.3** [release on 2024-11-09]
-  * Playframework 2.8.0, scala 2.13.11
+  * Playframework 2.8.0
 * **0.7.2** [release on 2023-09-13]
   * Playframework 2.8.0, scala 2.13.11   
 * **0.7.1** [release on 2019-12-24]
@@ -32,6 +38,9 @@ Datomisca uses Scala concepts to enhance the Datomic experience for Scala develo
 * **0.7.0** [release on 2019-12-8]
     * scala 2.12
 
+## Test
+sbt project integrationTests
+it:test
 
 ## Release
 sbt +publishSigned

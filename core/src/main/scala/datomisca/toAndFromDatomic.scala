@@ -1,12 +1,12 @@
 /*
  * Copyright 2012 Pellucid and Zenexity
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,9 @@
  */
 package datomisca
 
+import clojure.lang.IPersistentCollection
+
+import java.util
 import scala.annotation.implicitNotFound
 
 
@@ -48,8 +51,8 @@ object FromDatomic extends FromDatomicImplicits {
   }
 }
 
-/** Generic DatomicData to Scala type 
-  * Multi-valued "function" (not real function actually) 
+/** Generic DatomicData to Scala type
+  * Multi-valued "function" (not real function actually)
   * which inverse is surjective ToDatomic or ToDatomicCast
   * 1 DatomicData -> n Scala type
   */
@@ -101,7 +104,7 @@ trait ToDatomicCast[A] {
 }
 
 object ToDatomicCast extends ToDatomicCastImplicits {
-  def apply[A](f: A => AnyRef) = new ToDatomicCast[A] {
+  def apply[A](f: A => AnyRef): ToDatomicCast[A] = new ToDatomicCast[A] {
     def to(a: A): AnyRef = f(a)
   }
 }
@@ -113,9 +116,6 @@ import java.math.{BigInteger => JBigInt, BigDecimal => JBigDecimal}
 import java.{util => ju}
 import java.util.{Date, UUID}
 import java.net.URI
-
-import clojure.{lang => clj}
-
 
 /**
   * Think of FromDatomicInj[DD, T] as a type-level function: DD => T
@@ -154,7 +154,7 @@ private[datomisca] trait FromDatomicInjImplicits {
 trait FromDatomicImplicits {
 
   implicit def FromDatomicInj2FromDatomic[DD <: AnyRef, T]
-      (implicit fd: FromDatomicInj[DD, T]): FromDatomic[DD, T] = 
+      (implicit fd: FromDatomicInj[DD, T]): FromDatomic[DD, T] =
       FromDatomic[DD, T](fd.from(_))
 
   implicit val DLong2Int:               FromDatomic[jl.Long,     Int]         = FromDatomic(_.toInt)
@@ -235,7 +235,7 @@ trait ToDatomicInjImplicits {
   */
 trait ToDatomicImplicits {
   implicit def ToDatomicInj2ToDatomic[DD <: AnyRef, T]
-      (implicit tdat: ToDatomicInj[DD, T]): ToDatomic[DD, T] = 
+      (implicit tdat: ToDatomicInj[DD, T]): ToDatomic[DD, T] =
       ToDatomic[DD, T](tdat.to(_))
 
   implicit val Int2DLong        = ToDatomic[jl.Long, Int](_.toLong)
@@ -246,18 +246,18 @@ trait ToDatomicImplicits {
   implicit val JBigDec2DBigDec  = ToDatomic[JBigDecimal,  JBigDecimal](identity)
 
 
-  implicit def DColl2SetWrites[C, A](implicit ev: C <:< Traversable[A], conv: ToDatomicCast[A]) = new ToDatomic[ju.List[AnyRef], C] {
-    override def to(c: C) = {
+  implicit def DColl2SetWrites[C, A](implicit ev: C <:< Iterable[A], conv: ToDatomicCast[A]): ToDatomic[util.List[AnyRef], C] = new ToDatomic[ju.List[AnyRef], C] {
+    override def to(c: C): util.List[AnyRef] = {
       val builder = Seq.newBuilder[AnyRef]
       for (e <- c) builder += conv.to(e)
       datomic.Util.list(builder.result: _*).asInstanceOf[ju.List[AnyRef]]
     }
   }
 
-  implicit val dbConv = ToDatomic[datomic.Database, Database](_.underlying)
-  implicit val datomConv = ToDatomic[datomic.Datom, Datom](_.underlying)
-  implicit val rulesConv = ToDatomic[clojure.lang.IPersistentCollection, QueryRules](_.edn)
-  implicit val logConv = ToDatomic[datomic.Log, Log](_.log)
+  implicit val dbConv: ToDatomic[datomic.Database, Database] = ToDatomic[datomic.Database, Database](_.underlying)
+  implicit val datomConv: ToDatomic[datomic.Datom, Datom] = ToDatomic[datomic.Datom, Datom](_.underlying)
+  implicit val rulesConv: ToDatomic[IPersistentCollection, QueryRules] = ToDatomic[clojure.lang.IPersistentCollection, QueryRules](_.edn)
+  implicit val logConv: ToDatomic[datomic.Log, Log] = ToDatomic[datomic.Log, Log](_.log)
 
 }
 
@@ -265,13 +265,13 @@ trait ToDatomicImplicits {
   * ToDatomicCast fixes the return type of ToDatomic as DatomicData
   */
 trait ToDatomicCastImplicits {
-  implicit def DDWriter2ToDatomicCast[DD <: AnyRef, A](implicit tdat: ToDatomic[DD, A]) = 
+  implicit def DDWriter2ToDatomicCast[DD <: AnyRef, A](implicit tdat: ToDatomic[DD, A]): ToDatomicCast[A] =
     ToDatomicCast[A] { (a: A) => tdat.to(a): AnyRef }
 
-  implicit def DIdCast[I <: DId] = ToDatomicCast[I] { (i: I) => i.toDatomicId }
-  implicit def KeywordIdentified2DRef[I <: KeywordIdentified] = ToDatomicCast[I] { (i: I) => i.ident }
-  implicit def TempIdentified2DRef   [I <: TempIdentified]    = ToDatomicCast[I] { (i: I) => i.id.toDatomicId }
-  implicit def FinalIdentified2DRef  [I <: FinalIdentified]   = ToDatomicCast[I] { (i: I) => i.id }
+  implicit def DIdCast[I <: DId]: ToDatomicCast[I] = ToDatomicCast[I] { (i: I) => i.toDatomicId }
+  implicit def KeywordIdentified2DRef[I <: KeywordIdentified]: ToDatomicCast[I] = ToDatomicCast[I] { (i: I) => i.ident }
+  implicit def TempIdentified2DRef   [I <: TempIdentified]: ToDatomicCast[I] = ToDatomicCast[I] { (i: I) => i.id.toDatomicId }
+  implicit def FinalIdentified2DRef  [I <: FinalIdentified]: ToDatomicCast[I] = ToDatomicCast[I] { (i: I) => i.id }
 
-  implicit val JavaListCast = ToDatomicCast[ju.List[AnyRef]](identity)
+  implicit val JavaListCast: ToDatomicCast[util.List[AnyRef]] = ToDatomicCast[ju.List[AnyRef]](identity)
 }
