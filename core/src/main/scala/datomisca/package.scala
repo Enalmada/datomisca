@@ -239,7 +239,7 @@ package object datomisca {
       * @see [[EntityReader]]
       */
     def readOpt[A](implicit ev: Attribute2EntityReaderCast[DD, Card, A]): EntityReader[Option[A]] =
-      EntityReader[Option[A]] { e: Entity =>
+      EntityReader[Option[A]] { (e: Entity) =>
         if (e.contains(attribute.ident))
           Some(ev.convert(attribute).read(e))
         else
@@ -260,7 +260,7 @@ package object datomisca {
       * @see [[EntityReader]]
       */
     def readOrElse[A](default: => A)(implicit ev: Attribute2EntityReaderCast[DD, Card, A]): EntityReader[A] =
-      EntityReader[A] { e: Entity =>
+      EntityReader[A] { (e: Entity) =>
         if (e.contains(attribute.ident))
           ev.convert(attribute).read(e)
         else

@@ -31,7 +31,7 @@ object PersonSampleData extends SampleData {
 
   import Schema._
 
-  override val schema = Seq(
+  override val schema: Seq[datomisca.TxData] = Seq(
     idAttr, nameAttr, ageAttr, moodAttr,
     happyMood, sadMood, excitedMood,
     stressedMood, angryMood
@@ -78,7 +78,7 @@ object PersonSampleData extends SampleData {
       ++= (moodAttr -> tata.moods)
     ) withId DId(Partition.USER)
 
-  override val txData = Seq(
+  override val txData: Seq[datomisca.TxData] = Seq(
     totoTxData, tutuTxData, tataTxData
   )
 

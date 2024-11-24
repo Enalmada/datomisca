@@ -125,13 +125,13 @@ class AggregatesSpec
     Datomic.q(findSmallest3, db).headOption.value match {
       case coll: Iterable[_] =>
         coll should contain allOf (1163.0, 1353.4, 1561.0)
-      case _ => fail
+      case _ => fail()
     }
 
     Datomic.q(findLargest3, db).headOption.value match {
       case coll: Iterable[_] =>
         coll should contain allOf (696000.0, 69911.0, 58232.0)
-      case _ => fail
+      case _ => fail()
     }
 
     Datomic.q(findRandom5, db) should have size (1)

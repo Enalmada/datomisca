@@ -46,12 +46,12 @@ object AsEntityId {
   /** Any type viewable as a Long can be an entity id. */
   implicit def long[L](implicit toLong: L => Long): AsEntityId[L] =
     new AsEntityId[L] {
-      override protected[datomisca] def conv(l: L) = new FinalId(toLong(l))
+      override protected[datomisca] def conv(l: L): datomisca.FinalId = new FinalId(toLong(l))
     }
 
   /** Any subtype of [[DId]] can be an entity id. */
   implicit def dId[I <: DId]: AsEntityId[I] =
     new AsEntityId[I] {
-      override protected[datomisca] def conv(i: I) = i
+      override protected[datomisca] def conv(i: I): I = i
     }
 }

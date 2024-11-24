@@ -50,6 +50,10 @@ class ToFromDatomicSpec extends AnyFlatSpec with Matchers {
 
 
   "ToDatomicCast" can "write Scala types as DatomicData" in {
+
+    import scala.math.BigInt
+    import scala.math.BigDecimal
+
     toDatomic("string") shouldBe a [String]
     toDatomic(true)     shouldBe a [jl.Boolean]
 
@@ -62,11 +66,9 @@ class ToFromDatomicSpec extends AnyFlatSpec with Matchers {
     toDatomic(1.0f) shouldBe a [jl.Float]
     toDatomic(1.0)  shouldBe a [jl.Double]
 
-    toDatomic(BigInt(1))            shouldBe a [JBigInt]
-    toDatomic(BigInt(1).bigInteger) shouldBe a [JBigInt]
+    toDatomic(BigInt(1)) shouldBe a [JBigInt]
 
     toDatomic(BigDecimal(1))            shouldBe a [JBigDecimal]
-    toDatomic(BigDecimal(1).bigDecimal) shouldBe a [JBigDecimal]
 
     toDatomic(new Date) shouldBe a [Date]
 
@@ -107,8 +109,8 @@ class ToFromDatomicSpec extends AnyFlatSpec with Matchers {
     SchemaFact.add(id)(attrlong -> Char.MinValue)
     SchemaFact.add(id)(attrlong -> Byte.MinValue)
 
-    SchemaFact.add(id)(attrbigint -> BigInt(1).bigInteger)
-    SchemaFact.add(id)(attrbigdec -> BigDecimal(1).bigDecimal)
+    SchemaFact.add(id)(attrbigint -> BigInt(1))
+    SchemaFact.add(id)(attrbigdec -> BigDecimal(1))
 
     ()
   }

@@ -107,8 +107,9 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
 
       implicit val personReader = (
         PersonSchema.name.read[String] and
-        PersonSchema.age .read[Long]
-      )(Person)
+          PersonSchema.age.read[Long]
+        )(Person.apply)
+
 
       val idToto = DId(Partition.USER)
 
@@ -166,7 +167,8 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
       implicit val personReader = (
         PersonSchema.name.read[String] and
         PersonSchema.age.read[Long]
-      )(Person)
+        )(Person.apply)
+
 
       val idToto = DId(Partition.USER)
       val idTutu = DId(Partition.USER)
@@ -307,9 +309,9 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
 
       implicit val personLikeReader = (
         PersonSchema.name.read[String] and
-        PersonSchema.age .read[Long]   and
-        PersonSchema.like.readOpt[String]
-      )(PersonLike)
+          PersonSchema.age .read[Long]   and
+          PersonSchema.like.readOpt[String]
+        )(PersonLike.apply)
 
       implicit val personLikeWriter = (
         PersonSchema.name.write[String] and
@@ -362,9 +364,9 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
 
       implicit val personLikesReader = (
         PersonSchema.name .read[String] and
-        PersonSchema.age  .read[Long]   and
-        PersonSchema.likes.read[Set[String]]
-      )(PersonLikes)
+          PersonSchema.age  .read[Long]   and
+          PersonSchema.likes.read[Set[String]]
+        )(PersonLikes.apply)
 
       implicit val personLikesWriter = (
         PersonSchema.name .write[String] and
@@ -544,7 +546,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
       implicit val personReader = (
         PersonSchema.name.read[String] and
           PersonSchema.age.read[Long]
-        )(Person)
+        )(Person.apply)
 
       val idToto = DId(Partition.USER)
 
@@ -598,7 +600,8 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
       implicit val personReader = (
         PersonSchema.name.read[String] and
         PersonSchema.age .read[Long]
-      )(Person)
+        )(Person.apply)
+
 
       val idToto = DId(Partition.USER)
 
@@ -627,7 +630,8 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
       implicit val personReader = (
         PersonSchema.name.read[String] and
         PersonSchema.age .read[Long]
-      )(Person)
+        )(Person.apply)
+
 
       val idToto = DId(Partition.USER)
 
@@ -661,7 +665,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
 
       transactSync(toEntity(LookupRef(ColourPreference.email, "bob@rainbow.org"))(ColourPreference.Entity("robert@rainbow.com", "taupe")))
 
-      fromEntity(connection.database.entity(entityId)) must be_==(ColourPreference.Entity("robert@rainbow.com", "taupe"))
+      fromEntity(connection.database().entity(entityId)) must be_==(ColourPreference.Entity("robert@rainbow.com", "taupe"))
     }
 
     "13 - fetch an entity using its lookup ref as id" in {
@@ -670,7 +674,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
       transactSync(ColourPreference.schema:_*)
       GIVEN_anEntity(ColourPreference.Entity("bob@rainbow.org", "grey"))
 
-      val fetchedEntity = fromEntity(connection.database.entity(LookupRef(ColourPreference.email, "bob@rainbow.org")))
+      val fetchedEntity = fromEntity(connection.database().entity(LookupRef(ColourPreference.email, "bob@rainbow.org")))
 
       fetchedEntity must be_==(ColourPreference.Entity("bob@rainbow.org", "grey"))
     }
@@ -684,7 +688,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
       val lookupRef: LookupRef = LookupRef(ColourPreference.email, "bob@rainbow.org")
       transactSync(SchemaFact.retract(lookupRef)(ColourPreference.favouriteColour -> "grey"))
 
-      connection.database.entity(entityId).get(ColourPreference.favouriteColour) must beNone
+      connection.database().entity(entityId).get(ColourPreference.favouriteColour) must beNone
     }
   }
 
@@ -711,7 +715,7 @@ class DatomicTxSpec extends Specification with BeforeAfterAll {
           (e: Entity) => (e.email, e.favouriteColour)
         }
       implicit val Reader: EntityReader[Entity] =
-        (email.read[String] ~ favouriteColour.read[String])(Entity)
+        (email.read[String] ~ favouriteColour.read[String])(Entity.apply)
     }
   }
 

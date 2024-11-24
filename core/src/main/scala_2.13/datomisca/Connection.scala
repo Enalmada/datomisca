@@ -143,23 +143,24 @@ class Connection(val connection: datomic.Connection) extends AnyVal {
   def transact(ops: IterableOnce[TxData])(implicit ex: ExecutionContext): Future[TxReport] = {
     val arrayList =
       if (ops.isInstanceOf[Iterable[TxData]])
-        new ju.ArrayList[AnyRef](ops.size)
+        new ju.ArrayList[AnyRef](ops.iterator.size)
       else
         new ju.ArrayList[AnyRef]()
 
-    for (op <- ops)
-      arrayList.add(op.toTxData)
+    // Use iterator.foreach to iterate over ops
+    ops.iterator.foreach(op => arrayList.add(op.toTxData))
 
     val future = try {
-        Connection.bridgeDatomicFuture(connection.transactAsync(arrayList))
-      } catch {
-        case NonFatal(ex) => Future.failed(ex)
-      }
+      Connection.bridgeDatomicFuture(connection.transactAsync(arrayList))
+    } catch {
+      case NonFatal(ex) => Future.failed(ex)
+    }
 
-    future map { javaMap: java.util.Map[_, _] =>
+    future.map { (javaMap: java.util.Map[_, _]) =>
       new TxReport(javaMap)
     }
   }
+
 
   def txReportQueue(): TxReportQueue = new TxReportQueue(connection.txReportQueue)
 

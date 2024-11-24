@@ -75,7 +75,7 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
          :in $ [?names ...]
          :where [?e :person/name ?names]
         ]
-      """), Datomic.database, Seq("toto", "tata")) map {
+      """), Datomic.database(), Seq("toto", "tata")) map {
         case e: Long =>
           val entity = Datomic.database().entity(e)
           println(s"3 - entity: $e name: ${entity.get(person / "name")} - e: ${entity.get(person / "character")}")
@@ -96,7 +96,7 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
         ]
       """)
       Datomic.q(
-        q, Datomic.database,
+        q, Datomic.database(),
         Datomic.list(
           Datomic.list("toto", 30L),
           Datomic.list("tutu", 54L)
@@ -144,7 +144,7 @@ class DatomicQuerySpec extends Specification with BeforeAfterAll {
         ]
       """)
 
-      Datomic.q(q, Datomic.database, totoRule) map {
+      Datomic.q(q, Datomic.database(), totoRule) map {
         case (e: Long, age: Long) =>
           println(s"e: $e - age: $age")
           age must beEqualTo(30L)

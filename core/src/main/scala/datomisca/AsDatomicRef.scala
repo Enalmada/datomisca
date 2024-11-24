@@ -42,10 +42,9 @@ sealed trait AsDatomicRef[T] {
 object AsDatomicRef {
 
   /** A Scala Long is a valid reference type. */
-  implicit val long: AsDatomicRef[Long] =
-    new AsDatomicRef[Long] {
-      def toDatomicRef(l:  Long) = l: java.lang.Long
-    }
+  implicit val long: AsDatomicRef[Long] = new AsDatomicRef[Long] {
+    def toDatomicRef(l: Long): AnyRef = l: java.lang.Long  // Explicitly ensure the return is boxed
+  }
 
   /** Any subtype of [[DId]] is a valid reference type. */
   implicit def dId[I <: DId]: AsDatomicRef[I] =
@@ -56,7 +55,7 @@ object AsDatomicRef {
   /** Any type that can be viewed as a [[Keyword]] is a valid reference type. */
   implicit def keyword[K](implicit toKeyword: K => Keyword): AsDatomicRef[K] =
     new AsDatomicRef[K] {
-      def toDatomicRef(k: K) = toKeyword(k)
+      def toDatomicRef(k: K): datomisca.Keyword = toKeyword(k)
     }
 
   /** Any subtype of [[TempIdentified]] is a valid reference type. */
@@ -74,6 +73,6 @@ object AsDatomicRef {
   /** Any subtype of [[KeywordIdentified]] is a valid reference type. */
   implicit def keywordIdentified[I <: KeywordIdentified]: AsDatomicRef[I] =
     new AsDatomicRef[I] {
-      def toDatomicRef(i: I) = i.ident
+      def toDatomicRef(i: I): datomisca.Keyword = i.ident
     }
 }

@@ -102,7 +102,7 @@ object EntityReader {
     def fmap[A, B](ereader: EntityReader[A], f: A => B) = EntityReader{ e => f(ereader.read(e)) }
   }
 
-  implicit val entityReader: EntityReader[Entity] = EntityReader{ e: Entity => e }
+  implicit val entityReader: EntityReader[Entity] = EntityReader{ (e: Entity) => e }
 }
 
 

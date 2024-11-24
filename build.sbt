@@ -4,12 +4,12 @@ import sbt.librarymanagement.Resolver
 
 ThisBuild / organization := "com.github.enalmada"
 
-ThisBuild / version := "0.8.5"
+ThisBuild / version := "0.9.0"
 
 ThisBuild / scalaVersion := "2.13.15"
 
 // If supporting multiple Scala versions, make sure crossScalaVersions is set.
-ThisBuild / crossScalaVersions := Seq("2.12.18", "2.13.15")
+// ThisBuild / crossScalaVersions := Seq("2.13.15")
 
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
@@ -17,9 +17,11 @@ ThisBuild / scalacOptions ++= Seq(
   "-feature",
   "-unchecked",
   "-Xlint",
+  "-Xsource:3",
   "-Ywarn-dead-code",
   "-Ywarn-numeric-widen",
-  "-Ywarn-value-discard"
+  "-Ywarn-value-discard",
+  "-quickfix:any",
 )
 
 ThisBuild / scalacOptions ++= (

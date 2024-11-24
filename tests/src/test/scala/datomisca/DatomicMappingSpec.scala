@@ -85,42 +85,42 @@ class DatomicMappingSpec extends Specification {
     val schema = Seq(name, age)
   }
 
-  implicit val dogReader = (
+  implicit val dogReader: datomisca.EntityReader[DatomicMappingSpec.this.Dog] = (
     DogSchema.name.read[String] and
-    DogSchema.age .read[Long]
-  )(Dog)
+      DogSchema.age .read[Long]
+    )(Dog.apply)
 
   val wrongDogReader = (
     DogSchema.fakename.read[String] and
-    DogSchema.age     .read[Long]
-  )(Dog)
+      DogSchema.age     .read[Long]
+    )(Dog.apply)
 
   val personReader = (
     PersonSchema.name      .read[String]         and
-    PersonSchema.age       .read[Long]           and
-    PersonSchema.birth     .read[java.util.Date] and
-    PersonSchema.characters.read[Set[Keyword]]   and
-    PersonSchema.dog       .readOpt[IdView[Dog]]    and
-    PersonSchema.doggies   .read[Set[IdView[Dog]]]
-  )(Person)
+      PersonSchema.age       .read[Long]           and
+      PersonSchema.birth     .read[java.util.Date] and
+      PersonSchema.characters.read[Set[Keyword]]   and
+      PersonSchema.dog       .readOpt[IdView[Dog]] and
+      PersonSchema.doggies   .read[Set[IdView[Dog]]]
+    )(Person.apply)
 
   val personReader2 = (
     PersonSchema.name      .read[String]         and
-    PersonSchema.age       .read[Long]           and
-    PersonSchema.birth     .read[java.util.Date] and
-    PersonSchema.characters.read[Set[Keyword]]   and
-    PersonSchema.dog       .readOpt[Long]        and
-    PersonSchema.doggies   .read[Set[Long]]
-  )(Person2)
+      PersonSchema.age       .read[Long]           and
+      PersonSchema.birth     .read[java.util.Date] and
+      PersonSchema.characters.read[Set[Keyword]]   and
+      PersonSchema.dog       .readOpt[Long]        and
+      PersonSchema.doggies   .read[Set[Long]]
+    )(Person2.apply)
 
-  implicit val personWriter = (
+  implicit val personWriter: datomisca.PartialAddEntityWriter[DatomicMappingSpec.this.Person] = (
     PersonSchema.name      .write[String]         and
-    PersonSchema.age       .write[Long]           and
-    PersonSchema.birth     .write[java.util.Date] and
-    PersonSchema.characters.write[Set[Keyword]]   and
-    PersonSchema.dog       .writeOpt[IdView[Dog]]    and
-    PersonSchema.doggies   .write[Set[IdView[Dog]]]
-  )(unlift(Person.unapply))
+      PersonSchema.age       .write[Long]           and
+      PersonSchema.birth     .write[java.util.Date] and
+      PersonSchema.characters.write[Set[Keyword]]   and
+      PersonSchema.dog       .writeOpt[IdView[Dog]] and
+      PersonSchema.doggies   .write[Set[IdView[Dog]]]
+    )(unlift(Person.unapply))
 
   val birthDate = new java.util.Date()
   val medor = Dog("medor", 5L)

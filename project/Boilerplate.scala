@@ -281,7 +281,6 @@ object Boilerplate {
     ("""|
         |package functional
         |
-        |import scala.language.higherKinds
         |
         |class Builder[M[_]](combi: Combinator[M]) {""" +
            instances + """
