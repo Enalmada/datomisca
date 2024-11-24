@@ -23,6 +23,8 @@ Datomisca uses Scala concepts to enhance the Datomic experience for Scala develo
 ## Versions
 * **TRUNK** [not released in the repository, yet]
     * Fancy contributing something? :-)
+* **0.9.0** [release on 2024-11-17]
+  * prep for scala 3
 * **0.8.5** [release on 2024-11-17]
   * scala 2.13.15, back support 2.12
 * **0.8.4** [release on 2024-11-10]
@@ -43,5 +45,4 @@ sbt project integrationTests
 it:test
 
 ## Release
-sbt +publishSigned
-sbt sonatypeRelease
+sbt +publishSigned && sbt sonatypeRelease

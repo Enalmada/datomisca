@@ -106,7 +106,7 @@ object SocialNewsSampleData extends SampleData {
      :db.install/_attribute :db.part/db}
   """).get
 
-  override val txData = Seq.empty
+  override val txData: Seq[datomisca.TxData] = Seq.empty
 
   val txDatas = Seq(
     Datomic.parseOps("""

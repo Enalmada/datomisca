@@ -50,7 +50,7 @@ object Attribute2EntityReaderInj {
     * [[Entity]] or a [[Keyword]], therefore we can only say that
     * the return type is `Any`.
     */
-  implicit val attr2EntityReaderDRef2DD =
+  implicit val attr2EntityReaderDRef2DD: datomisca.Attribute2EntityReaderInj[datomisca.DatomicRef.type,datomisca.Cardinality.one.type,Any] =
     new Attribute2EntityReaderInj[DatomicRef.type, Cardinality.one.type, Any] {
       override def convert(attr: Attribute[DatomicRef.type, Cardinality.one.type]) = new EntityReader[Any] {
         override def read(entity: Entity) = entity(attr.ident)
@@ -65,8 +65,13 @@ object Attribute2EntityReaderInj {
   implicit val attr2EntityReaderManyDRef2DD: Attribute2EntityReaderInj[DatomicRef.type, Cardinality.many.type, Set[Any]] =
     new Attribute2EntityReaderInj[DatomicRef.type, Cardinality.many.type, Set[Any]] {
       override def convert(attr: Attribute[DatomicRef.type, Cardinality.many.type]): EntityReader[Set[Any]] = new EntityReader[Set[Any]] {
-        override def read(entity: Entity): Set[Any] =
-          entity.get(attr.ident) map { case c: Iterable[Any] => c.toSet } getOrElse (Set.empty)
+        override def read(entity: Entity): Set[Any] = {
+          entity.get(attr.ident) match {
+            case Some(c: Iterable[Any]) => c.toSet
+            case None => Set.empty
+            case Some(_) => throw new EntityMappingException("Expected an iterable collection for cardinality many attribute")
+          }
+        }
       }
     }
 

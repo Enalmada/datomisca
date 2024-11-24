@@ -45,7 +45,7 @@ class InvokeDbFnSpec
       Datomic.transact(DbFnSchema.schema)
     }
 
-    val db = conn.database
+    val db = conn.database()
 
     val res = db.invoke(DbFnSchema.myFn.ident, "The", "Quick Brown Fox")
 

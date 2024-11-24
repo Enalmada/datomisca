@@ -34,8 +34,9 @@ trait DatomicFixture extends ScalaFutures
 { self: Suite =>
 
   // globally set timeout to 10 seconds, with the future being checked every 100ms
-  implicit override val patienceConfig =
+  implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = Span(10, Seconds), interval = Span(100, Millis))
+
 
   def withDatomicDB(testCode: Connection => Any): Unit = {
     val uri = s"datomic:mem://${randomUUID()}"

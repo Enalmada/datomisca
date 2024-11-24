@@ -41,7 +41,7 @@ final class TempId(val underlying: datomic.db.DbId) extends AnyVal with DId {
 }
 
 final class LookupRef(val underlying: java.util.List[_]) extends AnyVal with DId {
-  def toDatomicId = underlying
+  def toDatomicId: java.util.List[_] = underlying
   override def toString = underlying.toString
 
   /** Returns the referenced entity, or none if the

@@ -165,7 +165,7 @@ class DatomicDatabaseSpec extends Specification {
                :where [?e ?attr ?val]
               ]
             """),
-            Datomic.database,
+            Datomic.database(),
             user / "email",
             "jdoe@example.com"
           ) map {
@@ -182,7 +182,7 @@ class DatomicDatabaseSpec extends Specification {
           val passwordHashId = Datomic.database().entid(user / "passwordHash")
           println(s"passwordHashId: $passwordHashId")
 
-          val filteredDb = Datomic.database filter { (_, datom) =>
+          val filteredDb = Datomic.database() filter { (_, datom) =>
             datom.attrId != passwordHashId
           }
 
@@ -226,7 +226,7 @@ class DatomicDatabaseSpec extends Specification {
           println(s"Found $count entities")
 
           // same query, filtered to stories that have been published.
-          val filteredDb2 = Datomic.database filter { (db, datom) =>
+          val filteredDb2 = Datomic.database() filter { (db, datom) =>
             db.entity(datom.tx).get(Datomic.KW(":publish/at")).isDefined
           }
 

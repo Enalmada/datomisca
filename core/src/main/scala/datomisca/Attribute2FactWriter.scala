@@ -43,7 +43,7 @@ object Attribute2FactWriter {
     */
   implicit def oneValue[DD <: AnyRef, Card <: Cardinality, T](implicit ev: ToDatomic[DD, T]): Attribute2FactWriter[DD, Card, T] =
     new Attribute2FactWriter[DD, Card, T] {
-      override def convert(attr: Attribute[DD, Card], t: T) =
+      override def convert(attr: Attribute[DD, Card], t: T): (datomisca.Keyword, DD) =
         (attr.ident -> ev.to(t))
     }
 
@@ -62,10 +62,10 @@ object Attribute2FactWriter {
     * then we can write a value of `T`
     * as an entity id reference for a reference attribute.
     */
-  implicit def oneIdView[Card <: Cardinality, T, U](implicit ev: T <:< IdView[U]): Attribute2FactWriter[DatomicRef.type, Card, T] =
-    new Attribute2FactWriter[DatomicRef.type, Card, T] {
-      override def convert(attr: Attribute[DatomicRef.type, Card], t: T) =
-        (attr.ident -> (ev(t).id: java.lang.Long))
+  implicit def oneIdView[Card <: Cardinality, T, U](implicit ev: T <:< IdView[U]): Attribute2FactWriter[DatomicRef.type, Card, T] = new Attribute2FactWriter[DatomicRef.type, Card, T] {
+    override def convert(attr: Attribute[DatomicRef.type, Card], t: T): (datomisca.Keyword, AnyRef) = {
+      (attr.ident -> (ev(t).id: java.lang.Long))  // Ensure box the result as AnyRef
     }
+  }
 
 }

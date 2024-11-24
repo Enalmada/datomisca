@@ -78,50 +78,44 @@ class DatomicMapping2Spec extends Specification {
     val schema = Seq(name, age)
   }
 
-  implicit val dogReader = (
+  implicit val dogReader: datomisca.EntityReader[DatomicMapping2Spec.this.Dog] = (
     DatomicMapping.readIdOpt and
-    DogSchema.name.read[String] and
-    DogSchema.age .read[Long]
-  )(Dog)
+      DogSchema.name.read[String] and
+      DogSchema.age.read[Long]
+    )(Dog.apply)
 
-  /*implicit val dogWriter = (
-    DatomicMapping.writeIdOpt and
-    DogSchema.name.write[String] and
-    DogSchema.age.write[Long]
-  )(unlift(Dog.unapply))*/
-
-  implicit val personReader = (
+  implicit val personReader: datomisca.EntityReader[DatomicMapping2Spec.this.Person] = (
     DatomicMapping.readId and
-    PersonSchema.name       .read[String]         and
-    PersonSchema.age        .read[Long]           and
-    PersonSchema.birth      .read[java.util.Date] and
-    PersonSchema.characters .read[Set[Keyword]]   and
-    PersonSchema.specialChar.read[Keyword]        and
-    PersonSchema.dog        .readOpt[Dog]         and
-    PersonSchema.doggies    .read[Set[Dog]]
-  )(Person)
+      PersonSchema.name       .read[String]         and
+      PersonSchema.age        .read[Long]           and
+      PersonSchema.birth      .read[java.util.Date] and
+      PersonSchema.characters .read[Set[Keyword]]   and
+      PersonSchema.specialChar.read[Keyword]        and
+      PersonSchema.dog        .readOpt[Dog]         and
+      PersonSchema.doggies    .read[Set[Dog]]
+    )(Person.apply)
 
-  implicit val person2Reader = (
+  implicit val person2Reader: datomisca.EntityReader[DatomicMapping2Spec.this.Person2] = (
     DatomicMapping.readId and
-    PersonSchema.name       .read[String]         and
-    PersonSchema.age        .read[Long]           and
-    PersonSchema.birth      .read[java.util.Date] and
-    PersonSchema.characters .read[Set[Keyword]]   and
-    PersonSchema.specialChar.read[Keyword]        and
-    PersonSchema.dog        .readOpt[Long]        and
-    PersonSchema.doggies    .read[Set[Long]]
-  )(Person2)
+      PersonSchema.name       .read[String]         and
+      PersonSchema.age        .read[Long]           and
+      PersonSchema.birth      .read[java.util.Date] and
+      PersonSchema.characters .read[Set[Keyword]]   and
+      PersonSchema.specialChar.read[Keyword]        and
+      PersonSchema.dog        .readOpt[Long]        and
+      PersonSchema.doggies    .read[Set[Long]]
+    )(Person2.apply)
 
-  implicit val person3Reader = (
+  implicit val person3Reader: datomisca.EntityReader[DatomicMapping2Spec.this.Person3] = (
     DatomicMapping.readId and
-    PersonSchema.name       .read[String]         and
-    PersonSchema.age        .read[Long]           and
-    PersonSchema.birth      .read[java.util.Date] and
-    PersonSchema.characters .read[Set[Keyword]]   and
-    PersonSchema.specialChar.read[Keyword]        and
-    PersonSchema.dog        .readOpt[Long]        and
-    PersonSchema.doggies    .readOpt[Set[Long]]
-  )(Person3)
+      PersonSchema.name       .read[String]         and
+      PersonSchema.age        .read[Long]           and
+      PersonSchema.birth      .read[java.util.Date] and
+      PersonSchema.characters .read[Set[Keyword]]   and
+      PersonSchema.specialChar.read[Keyword]        and
+      PersonSchema.dog        .readOpt[Long]        and
+      PersonSchema.doggies    .readOpt[Set[Long]]
+    )(Person3.apply)
 
 /*implicit val personWriter = (
     DatomicMapping.writeId and

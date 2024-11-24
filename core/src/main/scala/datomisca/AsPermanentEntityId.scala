@@ -37,21 +37,19 @@ sealed trait AsPermanentEntityId[T] {
 object AsPermanentEntityId {
 
   /** Any type viewable as a Long can be a permanent entity id. */
-  implicit def long[L](implicit toLong: L => Long): AsPermanentEntityId[L] =
-    new AsPermanentEntityId[L] {
-      override protected[datomisca] def conv(l: L) = toLong(l): java.lang.Long
-    }
+  implicit def long[L](implicit toLong: L => Long): AsPermanentEntityId[L] = new AsPermanentEntityId[L] {
+    override protected[datomisca] def conv(l: L): AnyRef = (toLong(l): java.lang.Long)
+  }
 
   /** A [[FinalId]] can be a permament entity id. */
-  implicit val finalid: AsPermanentEntityId[FinalId] =
-    new AsPermanentEntityId[FinalId] {
-      override protected[datomisca] def conv(l: FinalId) = l.underlying: java.lang.Long
-    }
+  implicit val finalid: AsPermanentEntityId[FinalId] = new AsPermanentEntityId[FinalId] {
+    override protected[datomisca] def conv(l: FinalId): AnyRef = (l.underlying: java.lang.Long)
+  }
 
   /** A [[LookupRef]] can be a permament entity id. */
   implicit def lookupRefId: AsPermanentEntityId[LookupRef] =
     new AsPermanentEntityId[LookupRef] {
-      override protected[datomisca] def conv(l: LookupRef) = l.toDatomicId
+      override protected[datomisca] def conv(l: LookupRef): java.util.List[_] = l.toDatomicId
     }
 }
 
